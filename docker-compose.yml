@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: beacongate
+      POSTGRES_PASSWORD: beacongate_dev
+      POSTGRES_DB: beacongate
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    # pgvector image includes the extension; init-db runs CREATE EXTENSION IF NOT EXISTS vector
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

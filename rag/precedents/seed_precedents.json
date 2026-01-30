@@ -1,0 +1,163 @@
+[
+  {
+    "title": "Health supplement unsubstantiated claim",
+    "scenarioSummary": "Ad claimed a supplement 'cures joint pain' with no disclaimer. Landing page had small disclaimer at bottom.",
+    "triggeredRules": ["RULE_PROHIBITED_PHRASE", "RULE_MISSING_DISCLAIMER", "RULE_HIDDEN_TEXT_HEURISTIC"],
+    "outcome": "REJECT",
+    "rationale": "Unsubstantiated cure claim and disclaimer not prominent; hidden-text heuristic triggered."
+  },
+  {
+    "title": "Health ad with proper disclaimer",
+    "scenarioSummary": "Ad for wellness product included 'Consult your doctor' and no cure claims.",
+    "triggeredRules": [],
+    "outcome": "APPROVE",
+    "rationale": "Disclaimer present; no prohibited phrases; category rules satisfied."
+  },
+  {
+    "title": "Finance crypto guaranteed returns",
+    "scenarioSummary": "Crypto ad promised 'guaranteed 10% monthly returns' with no risk disclaimer.",
+    "triggeredRules": ["RULE_PROHIBITED_PHRASE", "RULE_LANDING_DOMAIN_RISK"],
+    "outcome": "REJECT",
+    "rationale": "Guaranteed-return language prohibited; domain on risk list."
+  },
+  {
+    "title": "Loan ad clear terms",
+    "scenarioSummary": "Personal loan ad with clear APR and terms; landing matched ad.",
+    "triggeredRules": [],
+    "outcome": "APPROVE",
+    "rationale": "No misleading claims; terms visible; no redirect issues."
+  },
+  {
+    "title": "Redirect to different domain",
+    "scenarioSummary": "Ad linked to example.com; landing redirected to unrelated-offer.net.",
+    "triggeredRules": ["RULE_SUSPICIOUS_REDIRECTS", "RULE_REDIRECT_COUNT"],
+    "outcome": "REJECT",
+    "rationale": "Final domain differed from initial; redirect chain length exceeded threshold."
+  },
+  {
+    "title": "Single redirect same brand",
+    "scenarioSummary": "Ad URL redirected once to same-brand landing page.",
+    "triggeredRules": [],
+    "outcome": "APPROVE",
+    "rationale": "Single redirect; same domain; no cloaking."
+  },
+  {
+    "title": "Hidden disclaimer in HTML",
+    "scenarioSummary": "Health ad had disclaimer in div with display:none and font-size:0.",
+    "triggeredRules": ["RULE_HIDDEN_TEXT_HEURISTIC", "RULE_MISSING_DISCLAIMER"],
+    "outcome": "REJECT",
+    "rationale": "Disclaimer must be visible; hidden-text rule triggered."
+  },
+  {
+    "title": "Dating ad age-gated landing",
+    "scenarioSummary": "Dating ad with age gate on landing; no false outcome promises.",
+    "triggeredRules": [],
+    "outcome": "APPROVE",
+    "rationale": "Category-appropriate; no prohibited phrases."
+  },
+  {
+    "title": "Misleading before-after",
+    "scenarioSummary": "Skincare ad showed before/after with no substantiation or disclaimer.",
+    "triggeredRules": ["RULE_PROHIBITED_PHRASE"],
+    "outcome": "NEEDS_MORE_INFO",
+    "rationale": "Substantiation requested; outcome deferred pending documentation."
+  },
+  {
+    "title": "Denylist domain finance",
+    "scenarioSummary": "Loan ad pointed to domain on finance denylist.",
+    "triggeredRules": ["RULE_LANDING_DOMAIN_RISK"],
+    "outcome": "REJECT",
+    "rationale": "Landing domain on risk denylist; policy prohibits."
+  },
+  {
+    "title": "Health category no disclaimer",
+    "scenarioSummary": "Health supplement ad with no 'consult your doctor' or equivalent.",
+    "triggeredRules": ["RULE_MISSING_DISCLAIMER"],
+    "outcome": "REJECT",
+    "rationale": "Health category requires at least one approved disclaimer phrase."
+  },
+  {
+    "title": "General ad clean copy",
+    "scenarioSummary": "General product ad; no prohibited phrases; landing matched ad.",
+    "triggeredRules": [],
+    "outcome": "APPROVE",
+    "rationale": "No policy violations; evidence consistent."
+  },
+  {
+    "title": "Multiple redirects cloaking risk",
+    "scenarioSummary": "Ad went through 3 redirects; final page differed from initial domain and content type.",
+    "triggeredRules": ["RULE_SUSPICIOUS_REDIRECTS", "RULE_REDIRECT_COUNT"],
+    "outcome": "REJECT",
+    "rationale": "Redirect chain and domain change indicate cloaking risk."
+  },
+  {
+    "title": "Finance risk disclaimer present",
+    "scenarioSummary": "Investment ad included 'Past performance does not guarantee future results' and clear risk note.",
+    "triggeredRules": [],
+    "outcome": "APPROVE",
+    "rationale": "Required disclaimers present; no guaranteed-return language."
+  },
+  {
+    "title": "Prohibited phrase act now",
+    "scenarioSummary": "Ad used 'Act now or miss out' and similar high-pressure language.",
+    "triggeredRules": ["RULE_PROHIBITED_PHRASE"],
+    "outcome": "REJECT",
+    "rationale": "Prohibited phrase in ad copy; policy disallows."
+  },
+  {
+    "title": "Gambling ad jurisdiction",
+    "scenarioSummary": "Gambling ad with geo-gated landing and jurisdiction disclaimer.",
+    "triggeredRules": [],
+    "outcome": "APPROVE",
+    "rationale": "Jurisdiction and age restrictions respected; no false outcome claims."
+  },
+  {
+    "title": "Evasion via redirect",
+    "scenarioSummary": "Ad for health product redirected to finance offer on different domain.",
+    "triggeredRules": ["RULE_SUSPICIOUS_REDIRECTS", "RULE_LANDING_DOMAIN_RISK"],
+    "outcome": "REJECT",
+    "rationale": "Redirect used to evade category; final content unrelated to ad."
+  },
+  {
+    "title": "Supplement with visible disclaimer",
+    "scenarioSummary": "Supplement ad with 'Not evaluated by FDA' and 'Consult your doctor' in visible text.",
+    "triggeredRules": [],
+    "outcome": "APPROVE",
+    "rationale": "Health disclaimers visible and adequate."
+  },
+  {
+    "title": "Landing domain mismatch",
+    "scenarioSummary": "Ad stated brand A; landing was brand B with same product type.",
+    "triggeredRules": ["RULE_SUSPICIOUS_REDIRECTS"],
+    "outcome": "NEEDS_MORE_INFO",
+    "rationale": "Domain change may be legitimate partnership; reviewer requested clarification."
+  },
+  {
+    "title": "Clean health ad full compliance",
+    "scenarioSummary": "Health ad with disclaimer, no cure claims, and transparent landing.",
+    "triggeredRules": [],
+    "outcome": "APPROVE",
+    "rationale": "Full compliance with health and general policy."
+  },
+  {
+    "title": "Hidden text over threshold",
+    "scenarioSummary": "HTML snapshot had many elements with visibility:hidden and font-size:0.",
+    "triggeredRules": ["RULE_HIDDEN_TEXT_HEURISTIC"],
+    "outcome": "REJECT",
+    "rationale": "Hidden-style patterns exceeded threshold; potential cloaking."
+  },
+  {
+    "title": "Finance loan clear APR",
+    "scenarioSummary": "Short-term loan ad with APR and terms in ad and on landing.",
+    "triggeredRules": [],
+    "outcome": "APPROVE",
+    "rationale": "Transparent terms; no misleading claims."
+  },
+  {
+    "title": "Health and redirect combined",
+    "scenarioSummary": "Health ad with missing disclaimer and redirect to different domain.",
+    "triggeredRules": ["RULE_MISSING_DISCLAIMER", "RULE_SUSPICIOUS_REDIRECTS"],
+    "outcome": "REJECT",
+    "rationale": "Multiple violations; health disclaimer missing and redirect suspicious."
+  }
+]

@@ -1,0 +1,253 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Category {
+  HEALTH
+  FINANCE
+  DATING
+  GAMBLING
+  GENERAL
+}
+
+enum CaseStatus {
+  NEW
+  CAPTURING
+  READY_FOR_REVIEW
+  IN_REVIEW
+  DECIDED
+}
+
+enum RuleSeverity {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum EvidenceRef {
+  AD_TEXT
+  LANDING_URL
+  SCREENSHOT
+  HTML_SNAPSHOT
+  REDIRECT_CHAIN
+}
+
+enum CaptureStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+enum ArtifactType {
+  SCREENSHOT
+  HTML_SNAPSHOT
+  REDIRECT_CHAIN
+  NETWORK_SUMMARY
+}
+
+enum QueueTier {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum QueueStatus {
+  OPEN
+  IN_REVIEW
+  CLOSED
+}
+
+enum DocType {
+  POLICY
+  PRECEDENT
+}
+
+enum RetrievalType {
+  POLICY_ONLY
+  PRECEDENT_ONLY
+  BOTH
+}
+
+enum DecisionOutcome {
+  APPROVE
+  REJECT
+  NEEDS_MORE_INFO
+}
+
+model Evidence {
+  id                   String    @id @default(cuid())
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  landingUrl           String
+  screenshotPath        String?
+  evidenceHash         String
+  notes                String?
+  lastCapturedAt       DateTime?
+  currentCaptureRunId  String?   @unique
+  currentCaptureRun    EvidenceCaptureRun? @relation("EvidenceCurrentRun", fields: [currentCaptureRunId], references: [id])
+  case                 Case?
+  artifacts            EvidenceArtifact[]
+  captureRuns          EvidenceCaptureRun[] @relation("EvidenceCaptureRuns")
+}
+
+model EvidenceArtifact {
+  id          String       @id @default(cuid())
+  evidenceId  String
+  evidence    Evidence     @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  type        ArtifactType
+  createdAt   DateTime     @default(now())
+  path        String?
+  contentJson Json?
+  mimeType    String?
+  byteSize    Int?
+  sha256      String
+  meta        Json?
+}
+
+model EvidenceCaptureRun {
+  id          String        @id @default(cuid())
+  evidenceId  String
+  evidence    Evidence      @relation("EvidenceCaptureRuns", fields: [evidenceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+  status      CaptureStatus @default(QUEUED)
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  errorMessage String?
+  attempt     Int           @default(1)
+  evidenceCurrentRun Evidence? @relation("EvidenceCurrentRun")
+}
+
+model Case {
+  id         String     @id @default(cuid())
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  adText     String
+  category   Category
+  landingUrl String
+  status     CaseStatus @default(NEW)
+  evidenceId String    @unique
+  evidence   Evidence  @relation(fields: [evidenceId], references: [id])
+  ruleRuns     RuleRun[]
+  llmRuns      LLMRun[]
+  queueItem    QueueItem?
+  decision     ReviewDecision?
+  caseFiles    CaseFile[]
+  retrievalRuns RetrievalRun[]
+}
+
+model PolicyRule {
+  id            String        @id
+  name          String
+  description   String
+  severity      RuleSeverity
+  categoryScope Category?
+  enabled       Boolean       @default(true)
+  config        Json?
+
+  ruleRuns RuleRun[]
+}
+
+model RuleRun {
+  id         String      @id @default(cuid())
+  caseId     String
+  case       Case        @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  ruleId     String
+  rule       PolicyRule  @relation(fields: [ruleId], references: [id])
+  createdAt  DateTime    @default(now())
+  triggered  Boolean
+  matchedText String?
+  explanation String
+  evidenceRef EvidenceRef
+}
+
+model LLMRun {
+  id           String   @id @default(cuid())
+  caseId       String
+  case         Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  advisoryText String
+  model        String
+  temperature  Float
+  promptVersion String
+}
+
+model QueueItem {
+  id        String      @id @default(cuid())
+  caseId    String      @unique
+  case      Case        @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  riskScore Int
+  tier      QueueTier
+  status    QueueStatus @default(OPEN)
+}
+
+model ReviewDecision {
+  id            String         @id @default(cuid())
+  caseId        String         @unique
+  case          Case           @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  decidedAt     DateTime       @default(now())
+  outcome       DecisionOutcome
+  reviewerNotes String?
+}
+
+model CaseFile {
+  id        String   @id @default(cuid())
+  caseId    String
+  case      Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  version   Int
+  createdAt DateTime @default(now())
+  content   Json
+}
+
+// Phase 3: RAG (Policy + Precedent)
+model KnowledgeDocument {
+  id        String   @id @default(cuid())
+  type      DocType
+  title     String
+  source    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  chunks    KnowledgeChunk[]
+}
+
+model KnowledgeChunk {
+  id          String    @id @default(cuid())
+  documentId  String
+  document    KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  chunkIndex  Int
+  content     String
+  contentHash String
+  tokenCount  Int?
+  createdAt   DateTime  @default(now())
+  embedding   KnowledgeEmbedding?
+}
+
+model KnowledgeEmbedding {
+  id        String   @id @default(cuid())
+  chunkId   String   @unique
+  chunk     KnowledgeChunk @relation(fields: [chunkId], references: [id], onDelete: Cascade)
+  dims      Int
+  model     String
+  embedding Unsupported("vector(384)")
+  createdAt DateTime @default(now())
+}
+
+model RetrievalRun {
+  id           String       @id @default(cuid())
+  caseId       String
+  case         Case         @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  createdAt    DateTime     @default(now())
+  retrievalType RetrievalType
+  queryText   String
+  embedModel  String
+  topK        Int
+  results     Json
+  notes       String?
+}
