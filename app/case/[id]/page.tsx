@@ -365,7 +365,8 @@ export default async function CasePage({
                                 <div key={i} className="rounded-md border border-border bg-surface-elevated p-3 text-sm">
                                   <div className="flex flex-wrap items-center gap-2">
                                     <span className="font-medium text-text-primary">{item.documentTitle}</span>
-                                    <Badge variant="medium">{item.score.toFixed(2)}</Badge>
+                                    <span className="text-xs text-text-muted">similarity</span>
+                                    <Badge variant="medium" title="1 - cosine distance">{item.score.toFixed(2)}</Badge>
                                   </div>
                                   <p className="mt-1 text-text-muted line-clamp-2">{item.snippet}</p>
                                   <details className="mt-2">
@@ -387,7 +388,8 @@ export default async function CasePage({
                                 <div key={i} className="rounded-md border border-border bg-surface-elevated p-3 text-sm">
                                   <div className="flex flex-wrap items-center gap-2">
                                     <span className="font-medium text-text-primary">{item.documentTitle}</span>
-                                    <Badge variant="medium">{item.score.toFixed(2)}</Badge>
+                                    <span className="text-xs text-text-muted">similarity</span>
+                                    <Badge variant="medium" title="1 - cosine distance">{item.score.toFixed(2)}</Badge>
                                   </div>
                                   <p className="mt-1 text-text-muted line-clamp-2">{item.snippet}</p>
                                   <details className="mt-2">

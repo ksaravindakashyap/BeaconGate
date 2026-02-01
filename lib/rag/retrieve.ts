@@ -1,6 +1,9 @@
 /**
  * Phase 3: Vector retrieval for policy + precedent.
- * Cosine distance (<=>); store results in RetrievalRun.
+ * - Cosine distance: pgvector operator <=> (smaller is better).
+ * - ORDER BY ke.embedding <=> query_embedding (ASC = nearest first).
+ * - Score in results: similarity = (1 - cosine_distance), so higher score = more similar.
+ * - RetrievalRun.results stores chunkId, documentId, snippet, score (similarity).
  */
 
 import { prisma } from "../db";

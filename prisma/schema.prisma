@@ -231,12 +231,14 @@ model KnowledgeChunk {
 
 model KnowledgeEmbedding {
   id        String   @id @default(cuid())
-  chunkId   String   @unique
+  chunkId   String
   chunk     KnowledgeChunk @relation(fields: [chunkId], references: [id], onDelete: Cascade)
   dims      Int
   model     String
   embedding Unsupported("vector(384)")
   createdAt DateTime @default(now())
+
+  @@unique([chunkId, model])
 }
 
 model RetrievalRun {

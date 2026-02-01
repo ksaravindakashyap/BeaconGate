@@ -2,6 +2,22 @@
 
 Policy + Precedent RAG assistant (pgvector, local embeddings, retrieval UI).
 
+## Vector distance and normalization (verify once)
+
+- **Cosine distance:** Retrieval uses pgvector `<=>` (cosine distance). SQL orders by `ke.embedding <=> query_embedding` (ASC = nearest first). Confirmed in `lib/rag/retrieve.ts`.
+- **Score in UI:** Stored and displayed value is **similarity** = `(1 - cosine_distance)`, so higher = more similar. UI labels the badge as "similarity" so it is not confused with distance.
+- **Embedding normalization:** `lib/rag/embeddings.ts` uses Xenova pipeline with `pooling: "mean"` and `normalize: true` (L2). Vectors are normalized before storage/query for consistent cosine distance.
+- **KnowledgeEmbedding uniqueness:** Schema has `@@unique([chunkId, model])` so reindexing with a different model does not conflict (migration `20260201120000_knowledge_embedding_chunk_model_unique`).
+
+## Phase 3 sign-off checklist (short)
+
+- [ ] **rag:ingest:** `npm run rag:ingest` inserts docs > 0, chunks > 0, embeddings == chunks (after ingest, counts match).
+- [ ] **Stable retrieval:** Same case/query yields same ordering across repeated runs (deterministic embeddings + ORDER BY distance).
+- [ ] **Health claim case:** A case with health-related ad text reliably retrieves Health policy sections in Policy Matches.
+- [ ] **Redirect/cloaking case:** A redirect- or cloaking-related case retrieves redirect-related policy + at least one precedent in Similar Cases.
+- [ ] **RetrievalRun JSON:** Stored `results` include `chunkId`, `documentId`, and `snippet` (and score, documentTitle); UI displays snippet and "Open context" shows full chunk.
+- [ ] **UI advisory:** Policy & Precedent card shows "Retrieval is advisory; reviewer remains responsible." Decisions are not gated on retrieval (submit-decision does not require retrieval).
+
 ## Infra
 
 - [ ] pgvector enabled: `docker-compose up -d` uses `pgvector/pgvector:pg16` (or run migration that creates extension).
