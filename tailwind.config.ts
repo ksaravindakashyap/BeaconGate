@@ -31,6 +31,8 @@ const config: Config = {
         "warn-muted": "var(--warn-muted)",
         danger: "var(--danger)",
         "danger-muted": "var(--danger-muted)",
+        input: "var(--input)",
+        ring: "var(--ring)",
       },
       borderRadius: {
         DEFAULT: "var(--radius)",

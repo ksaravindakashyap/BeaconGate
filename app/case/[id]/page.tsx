@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { isDemoMode } from "@/lib/runtime/mode";
 import { getDemoCase, demoRedirectData, demoNetworkData } from "@/lib/demo/data";
+import { caseStatusVariant, captureStatusVariant, severityVariant } from "@/lib/badge-variants";
 import { DemoCaseView } from "./DemoCaseView";
 import { Badge } from "@/components/ui/badge";
 
@@ -150,7 +151,7 @@ export default async function CasePage({
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold text-text-primary">Case {id.slice(0, 8)}…</h1>
-          <Badge variant={caseToRender.status === "DECIDED" ? "default" : caseToRender.status === "CAPTURING" ? "medium" : "accent"} data-testid="case-status">
+          <Badge variant={caseStatusVariant(caseToRender.status)} data-testid="case-status">
             {caseToRender.status}
           </Badge>
         </div>
@@ -170,16 +171,7 @@ export default async function CasePage({
               {caseToRender.evidence.currentCaptureRun ? (
                 <>
                   <div className="flex items-center gap-2">
-                    <Badge
-                      variant={
-                        caseToRender.evidence.currentCaptureRun.status === "SUCCEEDED"
-                          ? "low"
-                          : caseToRender.evidence.currentCaptureRun.status === "FAILED"
-                            ? "high"
-                            : "medium"
-                      }
-                      data-testid="capture-status"
-                    >
+                    <Badge variant={captureStatusVariant(caseToRender.evidence.currentCaptureRun.status)} data-testid="capture-status">
                       {caseToRender.evidence.currentCaptureRun.status}
                     </Badge>
                     {(caseToRender.evidence.currentCaptureRun.status === "RUNNING" ||
@@ -392,7 +384,7 @@ export default async function CasePage({
                                   <div className="flex flex-wrap items-center gap-2">
                                     <span className="font-medium text-text-primary">{item.documentTitle}</span>
                                     <span className="text-xs text-text-muted">similarity</span>
-                                    <Badge variant="medium" title="1 - cosine distance">{item.score.toFixed(2)}</Badge>
+                                    <Badge variant="category" title="1 - cosine distance">{item.score.toFixed(2)}</Badge>
                                   </div>
                                   <p className="mt-1 text-text-muted line-clamp-2">{item.snippet}</p>
                                   <details className="mt-2">
@@ -415,7 +407,7 @@ export default async function CasePage({
                                   <div className="flex flex-wrap items-center gap-2">
                                     <span className="font-medium text-text-primary">{item.documentTitle}</span>
                                     <span className="text-xs text-text-muted">similarity</span>
-                                    <Badge variant="medium" title="1 - cosine distance">{item.score.toFixed(2)}</Badge>
+                                    <Badge variant="category" title="1 - cosine distance">{item.score.toFixed(2)}</Badge>
                                   </div>
                                   <p className="mt-1 text-text-muted line-clamp-2">{item.snippet}</p>
                                   <details className="mt-2">
@@ -523,7 +515,7 @@ export default async function CasePage({
                                   {advisory.claims.map((c, i) => (
                                     <li key={i}>
                                       <span className="text-text-primary">{c.text}</span>
-                                      <Badge variant={c.risk === "high" ? "high" : c.risk === "medium" ? "medium" : "low"} className="ml-2">{c.risk}</Badge>
+                                      <Badge variant={severityVariant(c.risk)} className="ml-2">{c.risk}</Badge>
                                     </li>
                                   ))}
                                 </ul>
@@ -571,7 +563,7 @@ export default async function CasePage({
                                 <summary className="cursor-pointer p-2 text-sm font-medium text-text-primary">Recommended next actions</summary>
                                 <ul className="space-y-1 p-2 text-sm text-text-muted">
                                   {advisory.recommendedNextActions.map((a, i) => (
-                                    <li key={i}><Badge variant="default">{a.priority}</Badge> {a.action}</li>
+                                    <li key={i}><Badge variant="category">{a.priority}</Badge> {a.action}</li>
                                   ))}
                                 </ul>
                               </details>

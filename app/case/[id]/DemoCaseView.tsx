@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { DemoCase } from "@/lib/demo/types";
+import { caseStatusVariant, captureStatusVariant, severityVariant } from "@/lib/badge-variants";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
@@ -33,7 +34,7 @@ export function DemoCaseView({
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold text-text-primary">Case {id.slice(0, 8)}…</h1>
-          <Badge variant={c.status === "DECIDED" ? "default" : c.status === "CAPTURING" ? "medium" : "accent"} data-testid="case-status">
+          <Badge variant={caseStatusVariant(c.status)} data-testid="case-status">
             {c.status}
           </Badge>
         </div>
@@ -52,16 +53,7 @@ export function DemoCaseView({
               {c.evidence.currentCaptureRun && (
                 <>
                   <div className="flex items-center gap-2">
-                    <Badge
-                      variant={
-                        c.evidence.currentCaptureRun.status === "SUCCEEDED"
-                          ? "low"
-                          : c.evidence.currentCaptureRun.status === "FAILED"
-                            ? "high"
-                            : "medium"
-                      }
-                      data-testid="capture-status"
-                    >
+                    <Badge variant={captureStatusVariant(c.evidence.currentCaptureRun.status)} data-testid="capture-status">
                       {c.evidence.currentCaptureRun.status}
                     </Badge>
                   </div>
@@ -197,10 +189,10 @@ export function DemoCaseView({
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-medium text-text-primary">{run.rule.name}</span>
                       <span className="font-mono text-xs text-text-muted">{run.ruleId}</span>
-                      <Badge variant={run.rule.severity === "HIGH" ? "high" : run.rule.severity === "MEDIUM" ? "medium" : "low"}>
+                      <Badge variant={severityVariant(run.rule.severity)}>
                         {run.rule.severity}
                       </Badge>
-                      {run.triggered && <Badge variant="high">Triggered</Badge>}
+                      {run.triggered && <Badge variant="risk_high">Triggered</Badge>}
                       <span className="text-xs text-text-muted">evidenceRef: {run.evidenceRef}</span>
                     </div>
                     <p className="mt-1 text-text-muted">{run.explanation}</p>

@@ -54,7 +54,7 @@ export function EvalCasesTable({
             type="checkbox"
             checked={showOnlyFailing}
             onChange={(e) => setShowOnlyFailing(e.target.checked)}
-            className="rounded border-border"
+            className="rounded border-border-soft bg-surface-elevated/15 accent-accent"
             data-testid="eval-show-only-failing"
             aria-label="Show only failing cases"
           />
@@ -93,7 +93,7 @@ export function EvalCasesTable({
                     </TableCell>
                     <TableCell className="font-medium">{c.title}</TableCell>
                     <TableCell>
-                      <Badge variant="default" className="text-xs">
+                      <Badge variant="category" className="text-xs">
                         {c.category}
                       </Badge>
                     </TableCell>

@@ -3,20 +3,22 @@
 @tailwind utilities;
 
 :root {
-  /* Neutrals */
-  --bg: #fafaf9;
-  --surface: #ffffff;
-  --surface-elevated: #ffffff;
-  --border: #e7e5e4;
-  --border-soft: #f0eeed;
-  --text-primary: #1c1917;
-  --text-muted: #57534e;
+  /* Emerald / teal contrast — deep navy, translucent surfaces */
+  --bg: #05070b;
+  --surface: #0b1220;
+  --surface-elevated: #101a2e;
+  --border: rgba(255, 255, 255, 0.12);
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --input: var(--border);
+  --ring: var(--accent);
+  --text-primary: #f1f5f9;
+  --text-muted: #94a3b8;
 
-  /* Single accent (primary actions, highlights, badges) */
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-muted: #dbeafe;
-  --accent-foreground: #ffffff;
+  /* Accent: emerald (matches shader) */
+  --accent: #10b981;
+  --accent-hover: #34d399;
+  --accent-muted: rgba(16, 185, 129, 0.2);
+  --accent-foreground: #020617;
 
   /* Semantic (restrained) */
   --success: #15803d;
@@ -28,16 +30,27 @@
 
   /* Layout & surfaces */
   --radius: 8px;
-  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.06);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 @layer base {
   html {
+    font-size: 100%;
     font-family: var(--font-gowun-batang), ui-sans-serif, system-ui, serif;
   }
   body {
     @apply bg-background text-text-primary antialiased;
     font-family: var(--font-gowun-batang), serif;
+    font-weight: 600; /* bolder default */
+  }
+
+  /* Landing: ensure body is deep navy so fixed backdrop has a base */
+  [data-theme="landing"] html,
+  [data-theme="landing"] body {
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    min-width: 100%;
   }
 }
