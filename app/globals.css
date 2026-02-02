@@ -40,18 +40,9 @@
     font-family: var(--font-gowun-batang), ui-sans-serif, system-ui, serif;
   }
   body {
-    @apply text-text-primary antialiased;
-    background: transparent;
+    @apply bg-background text-text-primary antialiased;
     font-family: var(--font-gowun-batang), serif;
     font-weight: 600; /* bolder default */
-    min-height: 100vh;
-    min-width: 100%;
-  }
-
-  /* Landing: same transparent body so GlobalBackdrop (emerald wavy) fills the whole page */
-  [data-theme="landing"] html,
-  [data-theme="landing"] body {
-    color: var(--text-primary);
     min-height: 100vh;
     min-width: 100%;
   }

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Gowun_Batang } from "next/font/google";
-import { GlobalBackdrop } from "@/components/GlobalBackdrop";
 import { Nav } from "@/components/nav";
 import { DemoBanner } from "@/components/DemoBanner";
 import { LandingTheme } from "@/components/LandingTheme";
+import { RouteBackdrops } from "@/components/RouteBackdrops";
 import "./globals.css";
 
 const gowunBatang = Gowun_Batang({
@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={gowunBatang.variable} suppressHydrationWarning>
       <body className="min-h-screen" suppressHydrationWarning>
-        <GlobalBackdrop />
+        <RouteBackdrops />
         <LandingTheme />
         <Nav />
         <DemoBanner />

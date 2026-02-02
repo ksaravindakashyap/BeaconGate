@@ -128,18 +128,18 @@ const SyntheticHero = ({
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-0 items-center justify-center overflow-hidden py-24 md:py-32"
+      className="relative flex min-h-[70vh] items-center justify-center py-24 md:py-32"
     >
-      {/* Background: full-page emerald wavy is provided by GlobalBackdrop in layout; no duplicate Canvas here so the whole page shares one background. */}
+      {/* Background: full-page shader is SiteBackdrop (mounted on landing page). Content only here. */}
 
-      <div className="relative z-10 flex flex-col items-center px-6 text-center">
+      <div className="relative z-10 flex flex-col items-center overflow-hidden px-6 text-center">
         <div ref={badgeWrapperRef}>
-          <Badge className="mb-6 flex items-center gap-2 border border-white/20 bg-white/10 px-4 py-1.5 font-medium uppercase tracking-wider text-emerald-300 backdrop-blur-md hover:bg-white/15">
-            <span className="text-[10px] font-light tracking-[0.18em] text-emerald-100/80">
+          <Badge className="mb-6 flex items-center gap-2 border border-border-soft bg-surface/30 px-4 py-1.5 font-medium uppercase tracking-wider text-accent backdrop-blur-md hover:bg-surface-elevated/40">
+            <span className="text-[10px] font-light tracking-[0.18em] text-text-muted">
               {badgeLabel}
             </span>
-            <span className="h-1 w-1 rounded-full bg-emerald-200/60" />
-            <span className="text-xs font-light tracking-tight text-emerald-200">
+            <span className="h-1 w-1 rounded-full bg-accent/80" />
+            <span className="text-xs font-light tracking-tight text-text-primary">
               {badgeText}
             </span>
           </Badge>
@@ -147,14 +147,14 @@ const SyntheticHero = ({
 
         <h1
           ref={headingRef}
-          className="mb-4 max-w-4xl text-5xl font-light tracking-tight text-white md:text-7xl"
+          className="mb-4 max-w-4xl text-5xl font-light tracking-tight text-text-primary md:text-7xl"
         >
           {title}
         </h1>
 
         <p
           ref={paragraphRef}
-          className="mx-auto mb-10 max-w-2xl text-lg font-light text-emerald-50/80"
+          className="mx-auto mb-10 max-w-2xl text-lg font-light text-text-muted"
         >
           {description}
         </p>
@@ -207,11 +207,11 @@ const SyntheticHero = ({
         {microDetails.length > 0 && (
           <ul
             ref={microRef}
-            className="mt-8 flex flex-wrap justify-center gap-6 text-xs font-light tracking-tight text-emerald-100/70"
+            className="mt-8 flex flex-wrap justify-center gap-6 text-xs font-light tracking-tight text-text-muted"
           >
             {microDetails.map((detail, index) => (
               <li key={index} className="flex items-center gap-2">
-                <span className="h-1 w-1 rounded-full bg-emerald-200/60" />
+                <span className="h-1 w-1 rounded-full bg-accent/80" />
                 {detail}
               </li>
             ))}

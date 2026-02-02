@@ -62,10 +62,10 @@ export default async function QueuePage({
   }
 
   return (
-    <div className="min-h-screen w-full">
-      <div className="mx-auto max-w-6xl px-6 py-10">
+    <div className="mx-auto max-w-6xl px-6 py-10">
+      <div className="rounded-2xl border border-border-soft bg-surface/20 p-6 backdrop-blur-md md:p-8">
         <h1 className="mb-6 text-2xl font-bold text-text-primary">Queue</h1>
-        <Card>
+        <Card className="border-border-soft bg-surface-elevated/25 backdrop-blur-xl">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Queue items</CardTitle>
             <div className="flex flex-wrap items-center gap-2">
@@ -96,90 +96,71 @@ export default async function QueuePage({
               </Link>
             </div>
           </CardHeader>
-        <CardContent>
-          <div className="mb-4 flex gap-2 text-sm text-text-muted">
-            Sort:{" "}
-            <Link
-              href={`/queue${statusFilter ? `?status=${statusFilter}` : ""}?sort=riskDesc`}
-              className="hover:text-text-primary"
-            >
-              Risk (high first)
-            </Link>
-            {" · "}
-            <Link
-              href={`/queue${statusFilter ? `?status=${statusFilter}` : ""}?sort=riskAsc`}
-              className="hover:text-text-primary"
-            >
-              Risk (low first)
-            </Link>
-            {" · "}
-            <Link
-              href={`/queue${statusFilter ? `?status=${statusFilter}` : ""}?sort=createdDesc`}
-              className="hover:text-text-primary"
-            >
-              Newest
-            </Link>
-            {" · "}
-            <Link
-              href={`/queue${statusFilter ? `?status=${statusFilter}` : ""}?sort=createdAsc`}
-              className="hover:text-text-primary"
-            >
-              Oldest
-            </Link>
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Risk</TableHead>
-                <TableHead>Case status</TableHead>
-                <TableHead>Queue</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {items.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>
-                    <Badge variant={tierVariant(item.tier)}>
-                      {item.tier} ({item.riskScore})
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={caseStatusVariant(item.case.status)} data-testid={`queue-status-${item.caseId}`}>{item.case.status}</Badge>
-                    {item.case.status === "CAPTURING" && (
-                      <span className="ml-2 text-xs text-text-muted">Capturing evidence…</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={queueStatusVariant(item.status)}>{item.status}</Badge>
-                  </TableCell>
-                  <TableCell className="text-text-primary">
-                    {item.case.category}
-                  </TableCell>
-                  <TableCell className="text-text-muted">
-                    {formatDate(item.createdAt)}
-                  </TableCell>
-                  <TableCell>
-                    <Link
-                      href={`/case/${item.caseId}`}
-                      className="text-sm font-medium text-accent hover:underline"
-                    >
-                      Open case
-                    </Link>
-                  </TableCell>
+          <CardContent>
+            <div className="mb-4 flex gap-2 text-sm text-text-muted">
+              Sort:{" "}
+              <Link href={`/queue${statusFilter ? `?status=${statusFilter}` : ""}?sort=riskDesc`} className="hover:text-text-primary">
+                Risk (high first)
+              </Link>
+              {" · "}
+              <Link href={`/queue${statusFilter ? `?status=${statusFilter}` : ""}?sort=riskAsc`} className="hover:text-text-primary">
+                Risk (low first)
+              </Link>
+              {" · "}
+              <Link href={`/queue${statusFilter ? `?status=${statusFilter}` : ""}?sort=createdDesc`} className="hover:text-text-primary">
+                Newest
+              </Link>
+              {" · "}
+              <Link href={`/queue${statusFilter ? `?status=${statusFilter}` : ""}?sort=createdAsc`} className="hover:text-text-primary">
+                Oldest
+              </Link>
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Risk</TableHead>
+                  <TableHead>Case status</TableHead>
+                  <TableHead>Queue</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead></TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {items.length === 0 && (
-            <p className="py-8 text-center text-sm text-text-muted">
-              No queue items match the filter.
-            </p>
-          )}
-        </CardContent>
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {items.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell>
+                      <Badge variant={tierVariant(item.tier)}>
+                        {item.tier} ({item.riskScore})
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={caseStatusVariant(item.case.status)} data-testid={`queue-status-${item.caseId}`}>
+                        {item.case.status}
+                      </Badge>
+                      {item.case.status === "CAPTURING" && (
+                        <span className="ml-2 text-xs text-text-muted">Capturing evidence…</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={queueStatusVariant(item.status)}>{item.status}</Badge>
+                    </TableCell>
+                    <TableCell className="text-text-primary">{item.case.category}</TableCell>
+                    <TableCell className="text-text-muted">{formatDate(item.createdAt)}</TableCell>
+                    <TableCell>
+                      <Link href={`/case/${item.caseId}`} className="text-sm font-medium text-accent hover:underline">
+                        Open case
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {items.length === 0 && (
+              <p className="py-8 text-center text-sm text-text-muted">No queue items match the filter.</p>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

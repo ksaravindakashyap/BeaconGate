@@ -66,7 +66,7 @@ export function EvalCasesTable({
           </span>
         )}
       </div>
-      <div className="rounded-md border border-border">
+      <div className="rounded-md border border-border-soft">
         <Table>
           <TableHeader>
             <TableRow>
@@ -85,12 +85,10 @@ export function EvalCasesTable({
               return (
                 <React.Fragment key={c.evalCaseId}>
                   <TableRow
-                    className="cursor-pointer hover:bg-border-soft"
+                    className="cursor-pointer hover:bg-white/5"
                     onClick={() => setExpandedId(open ? null : c.evalCaseId)}
                   >
-                    <TableCell className="font-mono text-xs">
-                      {open ? "▼" : "▶"}
-                    </TableCell>
+                    <TableCell className="font-mono text-xs">{open ? "▼" : "▶"}</TableCell>
                     <TableCell className="font-medium">{c.title}</TableCell>
                     <TableCell>
                       <Badge variant="category" className="text-xs">
@@ -99,47 +97,29 @@ export function EvalCasesTable({
                     </TableCell>
                     <TableCell className="text-center font-mono text-sm">
                       {c.rules.fn > 0 || c.rules.fp > 0 ? (
-                        <span className="text-danger">
-                          {c.rules.fn}/{c.rules.fp}
-                        </span>
+                        <span className="text-danger">{c.rules.fn}/{c.rules.fp}</span>
                       ) : (
                         <span className="text-success">0/0</span>
                       )}
                     </TableCell>
                     <TableCell className="text-center">
-                      {c.retrieval.policyHit ? (
-                        <span className="text-success">✓</span>
-                      ) : (
-                        <span className="text-danger">✗</span>
-                      )}
+                      {c.retrieval.policyHit ? <span className="text-success">✓</span> : <span className="text-danger">✗</span>}
                     </TableCell>
                     <TableCell className="text-center">
-                      {c.retrieval.precedentHit ? (
-                        <span className="text-success">✓</span>
-                      ) : (
-                        <span className="text-danger">✗</span>
-                      )}
+                      {c.retrieval.precedentHit ? <span className="text-success">✓</span> : <span className="text-danger">✗</span>}
                     </TableCell>
                     <TableCell className="text-center">
-                      {c.advisory.signalsHit ? (
-                        <span className="text-success">✓</span>
-                      ) : (
-                        <span className="text-danger">✗</span>
-                      )}
+                      {c.advisory.signalsHit ? <span className="text-success">✓</span> : <span className="text-danger">✗</span>}
                     </TableCell>
                   </TableRow>
                   {open && (
                     <TableRow key={`${c.evalCaseId}-detail`}>
-                      <TableCell colSpan={7} className="bg-border-soft/50 p-4">
+                      <TableCell colSpan={7} className="bg-surface-elevated/30 p-4">
                         <div className="grid gap-4 text-sm md:grid-cols-2">
                           <div>
                             <h4 className="mb-1 font-semibold text-text-primary">Rules</h4>
-                            <p className="text-text-muted">
-                              Expected: {c.rules.expected.length ? c.rules.expected.join(", ") : "—"}
-                            </p>
-                            <p className="text-text-muted">
-                              Actual: {c.rules.actual.length ? c.rules.actual.join(", ") : "—"}
-                            </p>
+                            <p className="text-text-muted">Expected: {c.rules.expected.length ? c.rules.expected.join(", ") : "—"}</p>
+                            <p className="text-text-muted">Actual: {c.rules.actual.length ? c.rules.actual.join(", ") : "—"}</p>
                           </div>
                           <div>
                             <h4 className="mb-1 font-semibold text-text-primary">Policy top</h4>

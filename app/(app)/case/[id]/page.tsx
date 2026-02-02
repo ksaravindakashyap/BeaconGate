@@ -138,6 +138,7 @@ export default async function CasePage({
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
+      <div className="rounded-2xl border border-border-soft bg-surface/20 p-6 backdrop-blur-md md:p-8">
       {sp.alreadyDecided === "1" && (
         <div className="mb-4 rounded-md border border-warn bg-warn-muted px-4 py-3 text-sm text-warn" role="alert">
           This case is already decided. No second decision or case file was created.
@@ -163,7 +164,7 @@ export default async function CasePage({
       <div className="grid gap-8 lg:grid-cols-2">
         <div className="space-y-6">
           {/* Evidence Capture card (Phase 2) */}
-          <Card>
+          <Card className="border-border-soft bg-surface-elevated/25 backdrop-blur-xl">
             <CardHeader>
               <CardTitle>Evidence capture</CardTitle>
             </CardHeader>
@@ -214,7 +215,7 @@ export default async function CasePage({
                         {caseToRender.evidence.artifacts
                           .filter((a) => a.type === "SCREENSHOT")
                           .map((a) => (
-                            <div key={a.id} className="rounded-md border border-border bg-background p-2">
+                            <div key={a.id} className="rounded-md border border-border-soft bg-surface-elevated/60 p-2">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
                                 src={`/api/artifacts/${a.id}`}
@@ -271,7 +272,7 @@ export default async function CasePage({
                                 </p>
                                 <details className="mt-2">
                                   <summary className="cursor-pointer text-xs text-accent">View JSON</summary>
-                                  <pre className="mt-2 overflow-auto rounded bg-background p-2 text-xs text-text-muted">
+                                  <pre className="mt-2 overflow-auto rounded bg-surface-elevated/60 p-2 text-xs text-text-muted">
                                     {JSON.stringify(n.data, null, 2)}
                                   </pre>
                                 </details>
@@ -292,7 +293,7 @@ export default async function CasePage({
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-border-soft bg-surface-elevated/25 backdrop-blur-xl">
             <CardHeader>
               <CardTitle>Evidence</CardTitle>
             </CardHeader>
@@ -311,7 +312,7 @@ export default async function CasePage({
               {caseToRender.evidence.screenshotPath &&
               !caseToRender.evidence.screenshotPath.includes("/") &&
               caseToRender.evidence.screenshotPath.length > 20 ? (
-                <div className="rounded-md border border-border bg-background p-4">
+                <div className="rounded-md border border-border-soft bg-surface-elevated/60 p-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={`/api/artifacts/${caseToRender.evidence.screenshotPath}`}
@@ -320,7 +321,7 @@ export default async function CasePage({
                   />
                 </div>
               ) : caseToRender.evidence.screenshotPath ? (
-                <div className="rounded-md border border-border bg-background p-4">
+                <div className="rounded-md border border-border-soft bg-surface-elevated/60 p-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={caseToRender.evidence.screenshotPath}
@@ -329,7 +330,7 @@ export default async function CasePage({
                   />
                 </div>
               ) : (
-                <div className="rounded-md border border-border bg-background p-8 text-center">
+                <div className="rounded-md border border-border-soft bg-surface-elevated/60 p-8 text-center">
                   <p className="text-sm text-text-muted">
                     {caseToRender.status === "CAPTURING"
                       ? "Capturing evidence…"
@@ -344,7 +345,7 @@ export default async function CasePage({
           </Card>
 
           {/* Phase 3: Policy & Precedent Assistant */}
-          <Card>
+          <Card className="border-border-soft bg-surface-elevated/25 backdrop-blur-xl">
             <CardHeader>
               <CardTitle>Policy &amp; Precedent Assistant</CardTitle>
             </CardHeader>
@@ -389,7 +390,7 @@ export default async function CasePage({
                                   <p className="mt-1 text-text-muted line-clamp-2">{item.snippet}</p>
                                   <details className="mt-2">
                                     <summary className="cursor-pointer text-xs text-accent hover:underline">Open context</summary>
-                                    <pre className="mt-2 max-h-48 overflow-auto rounded bg-background p-2 text-xs text-text-muted whitespace-pre-wrap">
+                                    <pre className="mt-2 max-h-48 overflow-auto rounded bg-surface-elevated/60 p-2 text-xs text-text-muted whitespace-pre-wrap">
                                       {item.content ?? item.snippet}
                                     </pre>
                                   </details>
@@ -412,7 +413,7 @@ export default async function CasePage({
                                   <p className="mt-1 text-text-muted line-clamp-2">{item.snippet}</p>
                                   <details className="mt-2">
                                     <summary className="cursor-pointer text-xs text-accent hover:underline">Open context</summary>
-                                    <pre className="mt-2 max-h-48 overflow-auto rounded bg-background p-2 text-xs text-text-muted whitespace-pre-wrap">
+                                    <pre className="mt-2 max-h-48 overflow-auto rounded bg-surface-elevated/60 p-2 text-xs text-text-muted whitespace-pre-wrap">
                                       {item.content ?? item.snippet}
                                     </pre>
                                   </details>
@@ -441,7 +442,7 @@ export default async function CasePage({
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-border-soft bg-surface-elevated/25 backdrop-blur-xl">
             <CardHeader>
               <CardTitle>Rule hits</CardTitle>
             </CardHeader>
@@ -473,7 +474,7 @@ export default async function CasePage({
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-border-soft bg-surface-elevated/25 backdrop-blur-xl">
             <CardHeader>
               <CardTitle>LLM Advisory (non-binding)</CardTitle>
             </CardHeader>
@@ -598,7 +599,7 @@ export default async function CasePage({
 
         <div className="space-y-6">
           {(caseToRender.status === "READY_FOR_REVIEW" || caseToRender.status === "IN_REVIEW") && (
-            <Card>
+            <Card className="border-border-soft bg-surface-elevated/25 backdrop-blur-xl">
               <CardHeader>
                 <CardTitle>Reviewer decision</CardTitle>
               </CardHeader>
@@ -612,7 +613,7 @@ export default async function CasePage({
           )}
 
           {caseToRender.status === "DECIDED" && caseToRender.decision && (
-            <Card>
+            <Card className="border-border-soft bg-surface-elevated/25 backdrop-blur-xl">
               <CardHeader>
                 <CardTitle>Decision</CardTitle>
               </CardHeader>
@@ -627,7 +628,7 @@ export default async function CasePage({
             </Card>
           )}
 
-          <Card>
+          <Card className="border-border-soft bg-surface-elevated/25 backdrop-blur-xl">
             <CardHeader>
               <CardTitle>Case file</CardTitle>
             </CardHeader>
@@ -660,7 +661,7 @@ export default async function CasePage({
                       {JSON.stringify((caseFileContent as { reviewer_decision?: unknown }).reviewer_decision, null, 2)}
                     </pre>
                   </div>
-                  <details className="rounded-md border border-border bg-background">
+                  <details className="rounded-md border border-border-soft bg-surface-elevated/60">
                     <summary className="cursor-pointer p-3 text-sm font-medium text-text-primary">
                       Raw JSON
                     </summary>
@@ -677,6 +678,7 @@ export default async function CasePage({
             </CardContent>
           </Card>
         </div>
+      </div>
       </div>
     </div>
   );

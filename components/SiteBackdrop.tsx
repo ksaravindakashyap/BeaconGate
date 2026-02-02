@@ -97,25 +97,6 @@ const fragmentShader = `
   }
 `;
 
-/** Base gradient + emerald/teal glow blobs + navy→black (single layer) */
-const BASE_GRADIENT_CLASS =
-  "absolute inset-0 pointer-events-none bg-[radial-gradient(1200px_circle_at_20%_20%,rgba(16,185,129,0.18),transparent_60%),radial-gradient(900px_circle_at_80%_30%,rgba(45,212,191,0.14),transparent_55%),linear-gradient(to_bottom,rgba(3,7,18,0.92),rgba(0,0,0,0.98))]";
-
-/** Wavy texture via repeating gradients + blur */
-const WAVY_LAYER_STYLE = {
-  mixBlendMode: "soft-light" as const,
-  opacity: 0.08,
-  background:
-    "repeating-radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.08)_0_1px,transparent_1px_14px),repeating-linear-gradient(115deg,rgba(45,212,191,0.06)_0_1px,transparent_1px_18px)",
-};
-
-/** CSS-based grain (no asset) */
-const NOISE_LAYER_STYLE = {
-  opacity: 0.05,
-  backgroundImage:
-    "repeating-linear-gradient(0deg,transparent_0px,transparent_2px,rgba(255,255,255,0.03)_2px,rgba(255,255,255,0.03)_4px),repeating-linear-gradient(90deg,transparent_0px,transparent_2px,rgba(255,255,255,0.03)_2px,rgba(255,255,255,0.03)_4px),repeating-linear-gradient(45deg,transparent_0px,transparent_2px,rgba(255,255,255,0.02)_2px,rgba(255,255,255,0.02)_4px)",
-};
-
 export function SiteBackdrop() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const shaderUniforms = useMemo(
@@ -136,42 +117,39 @@ export function SiteBackdrop() {
 
   return (
     <div
-      className="fixed inset-0 -z-10 pointer-events-none"
+      className="fixed inset-0 pointer-events-none -z-10 overflow-hidden"
       aria-hidden
     >
-      {/* Optional: WebGL shader (disabled when prefers-reduced-motion) */}
-      {!prefersReducedMotion && (
-        <Canvas
-          gl={{
-            antialias: true,
-            alpha: true,
-            powerPreference: "high-performance",
-          }}
-          dpr={[1, 2]}
-          className="!block w-full h-full"
-        >
-          <ShaderPlane
-            vertexShader={vertexShader}
-            fragmentShader={fragmentShader}
-            uniforms={shaderUniforms}
-          />
-        </Canvas>
-      )}
+      {/* 1. Canvas (single instance, viewport-fixed) */}
+      <div className="absolute inset-0">
+        {!prefersReducedMotion && (
+          <Canvas
+            gl={{
+              antialias: true,
+              alpha: true,
+              powerPreference: "high-performance",
+            }}
+            dpr={[1, 2]}
+            className="!block w-full h-full min-w-0 min-h-0"
+          >
+            <ShaderPlane
+              vertexShader={vertexShader}
+              fragmentShader={fragmentShader}
+              uniforms={shaderUniforms}
+            />
+          </Canvas>
+        )}
+      </div>
 
-      {/* Base: navy→black + emerald/teal glow blobs */}
-      <div className={BASE_GRADIENT_CLASS} aria-hidden />
-
-      {/* Subtle wavy/organic texture (CSS-only) */}
+      {/* 2. Readability gradient overlay */}
       <div
-        className="absolute inset-0 pointer-events-none blur-2xl"
-        style={WAVY_LAYER_STYLE}
+        className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/35 to-black/70"
         aria-hidden
       />
 
-      {/* Very subtle noise/grain (CSS-only, no asset) */}
+      {/* 3. Subtle texture/noise overlay above gradient (pure CSS) */}
       <div
-        className="absolute inset-0 pointer-events-none bg-repeat"
-        style={NOISE_LAYER_STYLE}
+        className="absolute inset-0 opacity-[0.08] mix-blend-soft-light bg-[radial-gradient(circle_at_20%_20%,rgba(52,211,153,0.35),transparent_45%),radial-gradient(circle_at_80%_30%,rgba(16,185,129,0.25),transparent_50%),radial-gradient(circle_at_40%_80%,rgba(20,184,166,0.18),transparent_55%)]"
         aria-hidden
       />
     </div>
