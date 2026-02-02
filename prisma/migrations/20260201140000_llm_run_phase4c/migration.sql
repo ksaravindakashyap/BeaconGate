@@ -1,0 +1,7 @@
+-- Phase 4C: LLM Advisory — audit-grade LLMRun (append-only)
+ALTER TABLE "LLMRun" ADD COLUMN "provider" TEXT NOT NULL DEFAULT 'mock';
+ALTER TABLE "LLMRun" ADD COLUMN "inputHash" TEXT NOT NULL DEFAULT '';
+ALTER TABLE "LLMRun" ADD COLUMN "advisoryJson" JSONB;
+ALTER TABLE "LLMRun" ADD COLUMN "citationsJson" JSONB;
+ALTER TABLE "LLMRun" ADD COLUMN "errorMessage" TEXT;
+ALTER TABLE "LLMRun" ADD COLUMN "latencyMs" INTEGER;

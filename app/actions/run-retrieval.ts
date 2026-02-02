@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { runRetrieval, buildQueryText } from "@/lib/rag/retrieve";
 import { revalidatePath } from "next/cache";
 
-export async function runRetrievalAction(caseIdOrFormData: string | FormData) {
+async function runRetrievalAction(caseIdOrFormData: string | FormData) {
   const caseId = typeof caseIdOrFormData === "string" ? caseIdOrFormData : (caseIdOrFormData.get("caseId") as string);
   if (!caseId) return { error: "Case ID required" };
   const c = await prisma.case.findUnique({

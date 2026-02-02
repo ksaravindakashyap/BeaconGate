@@ -57,6 +57,9 @@ export async function submitDecision(formData: FormData): Promise<void> {
   }
 
   const decision = await prisma.reviewDecision.findUnique({ where: { caseId } });
+  const latestLlmRun = c.llmRuns.length > 0
+    ? [...c.llmRuns].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
+    : null;
   const caseFileContent = {
     case_id: caseId,
     evidence_summary: {
@@ -73,11 +76,17 @@ export async function submitDecision(formData: FormData): Promise<void> {
       evidenceRef: r.evidenceRef,
     })),
     llm_advisory:
-      c.llmRuns.length > 0
+      latestLlmRun
         ? {
+            llmRunId: latestLlmRun.id,
             label: "LLM Advisory (non-binding)",
-            advisoryText: c.llmRuns[0].advisoryText,
-            model: c.llmRuns[0].model,
+            advisoryText: latestLlmRun.advisoryText,
+            model: latestLlmRun.model,
+            provider: latestLlmRun.provider,
+            promptVersion: latestLlmRun.promptVersion,
+            inputHash: latestLlmRun.inputHash,
+            advisoryJson: latestLlmRun.advisoryJson,
+            citationsJson: latestLlmRun.citationsJson,
           }
         : null,
     reviewer_decision: decision

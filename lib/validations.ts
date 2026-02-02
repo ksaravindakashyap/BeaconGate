@@ -15,6 +15,3 @@ export const decisionSchema = z.object({
   outcome: z.enum(OUTCOMES),
   reviewerNotes: z.string().max(5000).optional(),
 });
-
-export type SubmitCaseInput = z.infer<typeof submitCaseSchema>;
-export type DecisionInput = z.infer<typeof decisionSchema>;

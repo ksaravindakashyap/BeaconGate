@@ -39,7 +39,7 @@ export interface CaptureResult {
   error?: string;
 }
 
-export interface CaptureError {
+interface CaptureError {
   success: false;
   error: string;
 }

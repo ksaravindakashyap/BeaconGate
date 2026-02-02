@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
     "worker": "ts-node --compiler-options \"{\\\"module\\\":\\\"CommonJS\\\",\\\"moduleResolution\\\":\\\"node\\\"}\" worker/index.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
@@ -15,7 +16,18 @@
     "db:up": "docker-compose up -d",
     "db:down": "docker-compose down",
     "rag:ingest": "npx ts-node --compiler-options \"{\\\"module\\\":\\\"CommonJS\\\",\\\"moduleResolution\\\":\\\"node\\\"}\" scripts/rag-ingest.ts",
-    "rag:reindex": "npx ts-node --compiler-options \"{\\\"module\\\":\\\"CommonJS\\\",\\\"moduleResolution\\\":\\\"node\\\"}\" scripts/rag-ingest.ts --reindex"
+    "rag:reindex": "npx ts-node --compiler-options \"{\\\"module\\\":\\\"CommonJS\\\",\\\"moduleResolution\\\":\\\"node\\\"}\" scripts/rag-ingest.ts --reindex",
+    "eval:build-cases": "npx ts-node --compiler-options \"{\\\"module\\\":\\\"CommonJS\\\",\\\"moduleResolution\\\":\\\"node\\\"}\" scripts/build-eval-cases.ts",
+    "eval:seed": "npx ts-node --compiler-options \"{\\\"module\\\":\\\"CommonJS\\\",\\\"moduleResolution\\\":\\\"node\\\"}\" scripts/eval-run.ts seed",
+    "eval:run": "npx ts-node --compiler-options \"{\\\"module\\\":\\\"CommonJS\\\",\\\"moduleResolution\\\":\\\"node\\\"}\" scripts/eval-run.ts run",
+    "eval:latest": "npx ts-node --compiler-options \"{\\\"module\\\":\\\"CommonJS\\\",\\\"moduleResolution\\\":\\\"node\\\"}\" scripts/eval-run.ts latest",
+    "typecheck": "tsc --noEmit",
+    "lint:ts": "tsc -p tsconfig.lint.json --noEmit",
+    "lint:dead": "knip",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test"
   },
   "prisma": {
     "seed": "npx ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -37,15 +49,22 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@testing-library/jest-dom": "^6.6.3",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9",
     "eslint-config-next": "15.1.9",
+    "jsdom": "^25.0.1",
+    "knip": "^5.82.1",
     "postcss": "^8",
     "prisma": "^6.9.0",
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^2.1.6",
+    "wait-on": "^8.0.1"
   }
 }

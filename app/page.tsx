@@ -2,10 +2,21 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { isDemoMode } from "@/lib/runtime/mode";
 
 export default function Home() {
+  const demo = isDemoMode();
   return (
     <div className="min-h-screen bg-background">
+      {demo && (
+        <div className="mx-auto max-w-6xl px-4 pt-4 md:px-6">
+          <Card className="border-border-soft bg-surface-elevated">
+            <CardContent className="py-3 text-sm text-text-muted">
+              This is a demo deployment. Use <Link href="/setup" className="text-accent hover:underline">/setup</Link> to enable full mode.
+            </CardContent>
+          </Card>
+        </div>
+      )}
       <main>
         {/* Hero: two columns — single H1 with orange highlight */}
         <section className="border-b border-border-soft py-16 md:py-20">

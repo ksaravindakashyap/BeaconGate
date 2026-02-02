@@ -30,7 +30,7 @@ export function DecisionForm({ caseId }: { caseId: string }) {
           placeholder="Add reviewer notes..."
         />
       </div>
-      <Button type="submit">Submit decision</Button>
+      <Button type="submit" data-testid="submit-decision-btn">Submit decision</Button>
     </form>
   );
 }

@@ -29,6 +29,12 @@ export function Nav() {
           >
             Dashboard
           </Link>
+          <Link
+            href="/eval"
+            className="text-sm font-medium text-text-muted hover:text-text-primary"
+          >
+            Eval
+          </Link>
         </div>
       </div>
     </nav>

@@ -11,6 +11,14 @@ export type CaseInput = {
   redirectChain?: { url: string; status?: number }[];
 };
 
+export type RuleRunLike = {
+  ruleId: string;
+  triggered: boolean;
+  matchedText: string | null;
+  explanation: string;
+  evidenceRef: EvidenceRef;
+};
+
 function runProhibitedPhrase(adText: string, config: { patterns: { regex: string; flags: string }[] }) {
   for (const { regex, flags } of config.patterns) {
     const re = new RegExp(regex, flags);
@@ -85,7 +93,7 @@ function getDomain(url: string): string {
 
 function runSuspiciousRedirects(
   redirectChain: { url: string }[],
-  config: { maxRedirects: number }
+  _config: { maxRedirects: number }
 ) {
   const len = redirectChain.length;
   if (len >= 2) {
@@ -99,6 +107,73 @@ function runSuspiciousRedirects(
     }
   }
   return { triggered: false, matchedText: null, explanation: "Redirect chain within limits." };
+}
+
+/**
+ * Phase 5: Pure rule evaluation (no DB writes). Returns rule results for eval harness.
+ */
+export function runRulesOnInput(
+  input: CaseInput,
+  rules: { id: string; config: unknown }[]
+): RuleRunLike[] {
+  const ruleConfigMap = new Map(RULES_CONFIG.map((r) => [r.id, r]));
+  const results: RuleRunLike[] = [];
+
+  for (const rule of rules) {
+    const cfg = ruleConfigMap.get(rule.id as (typeof RULES_CONFIG)[number]["id"]);
+    const config = (rule.config ?? cfg?.config) as Record<string, unknown> | null;
+    if (!config) continue;
+
+    let result: { triggered: boolean; matchedText: string | null; explanation: string };
+    let evidenceRef: EvidenceRef = EvidenceRef.AD_TEXT;
+
+    switch (rule.id) {
+      case "RULE_PROHIBITED_PHRASE":
+        result = runProhibitedPhrase(input.adText, config as { patterns: { regex: string; flags: string }[] });
+        evidenceRef = EvidenceRef.AD_TEXT;
+        break;
+      case "RULE_MISSING_DISCLAIMER":
+        result = runMissingDisclaimer(input.adText, input.category, config as { requiredPhrases: string[]; matchAny: boolean });
+        evidenceRef = EvidenceRef.AD_TEXT;
+        break;
+      case "RULE_LANDING_DOMAIN_RISK":
+        result = runLandingDomainRisk(input.landingUrl, config as { deniedDomains: string[] });
+        evidenceRef = EvidenceRef.LANDING_URL;
+        break;
+      case "RULE_REDIRECT_COUNT":
+        result = runRedirectCount(config as { maxRedirects: number; simulateRedirects?: number }, input.redirectChain);
+        evidenceRef = EvidenceRef.REDIRECT_CHAIN;
+        break;
+      case "RULE_HIDDEN_TEXT_HEURISTIC":
+        if (input.htmlContent) {
+          result = runHiddenTextHeuristic(input.htmlContent, config as { threshold: number; patterns: string[] });
+          evidenceRef = EvidenceRef.HTML_SNAPSHOT;
+        } else {
+          result = { triggered: false, matchedText: null, explanation: "No HTML snapshot available." };
+        }
+        break;
+      case "RULE_SUSPICIOUS_REDIRECTS":
+        if (input.redirectChain && input.redirectChain.length > 0) {
+          result = runSuspiciousRedirects(input.redirectChain, config as { maxRedirects: number });
+          evidenceRef = EvidenceRef.REDIRECT_CHAIN;
+        } else {
+          result = { triggered: false, matchedText: null, explanation: "No redirect chain available." };
+        }
+        break;
+      default:
+        result = { triggered: false, matchedText: null, explanation: "Unknown rule." };
+    }
+
+    results.push({
+      ruleId: rule.id,
+      triggered: result.triggered,
+      matchedText: result.matchedText,
+      explanation: result.explanation,
+      evidenceRef,
+    });
+  }
+
+  return results;
 }
 
 export async function runRules(caseId: string, input: CaseInput): Promise<void> {

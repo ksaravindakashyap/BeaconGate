@@ -2,21 +2,29 @@ import { Queue, Worker, type Job } from "bullmq";
 import IORedis from "ioredis";
 
 const REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379";
-const connection = new IORedis(REDIS_URL, { maxRetriesPerRequest: null });
+const EVIDENCE_CAPTURE_QUEUE_NAME = "evidence-capture";
 
-export const EVIDENCE_CAPTURE_QUEUE_NAME = "evidence-capture";
+let _connection: IORedis | null = null;
+function getConnection(): IORedis {
+  if (!_connection) {
+    _connection = new IORedis(REDIS_URL, { maxRetriesPerRequest: null });
+  }
+  return _connection;
+}
 
-export const evidenceCaptureQueue = new Queue(EVIDENCE_CAPTURE_QUEUE_NAME, {
-  connection,
-  defaultJobOptions: {
-    attempts: 2,
-    backoff: { type: "exponential", delay: 2000 },
-    removeOnComplete: { count: 100 },
-  },
-});
-
-export function getConnection(): IORedis {
-  return connection;
+let _queue: Queue | null = null;
+function getQueue(): Queue {
+  if (!_queue) {
+    _queue = new Queue(EVIDENCE_CAPTURE_QUEUE_NAME, {
+      connection: getConnection(),
+      defaultJobOptions: {
+        attempts: 2,
+        backoff: { type: "exponential", delay: 2000 },
+        removeOnComplete: { count: 100 },
+      },
+    });
+  }
+  return _queue;
 }
 
 export type EvidenceCaptureJobData = {
@@ -29,7 +37,7 @@ export type EvidenceCaptureJobData = {
 };
 
 export async function addEvidenceCaptureJob(data: EvidenceCaptureJobData) {
-  return evidenceCaptureQueue.add("capture", data, {
+  return getQueue().add("capture", data, {
     jobId: data.evidenceId,
   });
 }
@@ -37,9 +45,8 @@ export async function addEvidenceCaptureJob(data: EvidenceCaptureJobData) {
 export function createWorker(
   processor: (job: Job<EvidenceCaptureJobData>) => Promise<void>
 ): Worker<EvidenceCaptureJobData> {
-  return new Worker(
-    EVIDENCE_CAPTURE_QUEUE_NAME,
-    processor,
-    { connection, concurrency: 2 }
-  );
+  return new Worker(EVIDENCE_CAPTURE_QUEUE_NAME, processor, {
+    connection: getConnection(),
+    concurrency: 2,
+  });
 }

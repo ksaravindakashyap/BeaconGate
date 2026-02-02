@@ -1,0 +1,756 @@
+[
+  {
+    "title": "Health supplement cure claim no disclaimer",
+    "category": "HEALTH",
+    "adText": "Our supplement guarantees a cure for joint pain. Try it today.",
+    "landingUrl": "https://example.com/supplement",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_PROHIBITED_PHRASE",
+        "RULE_MISSING_DISCLAIMER"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_9ecb14812e81",
+        "chk_5652cc77d0dd",
+        "chk_6c366f41609b"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_82ddfd2c2a79"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Health ad with consult your doctor",
+    "category": "HEALTH",
+    "adText": "Wellness product. Consult your doctor before use. Not medical advice.",
+    "landingUrl": "https://example.com/wellness",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [],
+      "expectedPolicyChunkMustHit": [
+        "chk_9ecb14812e81",
+        "chk_5652cc77d0dd"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_eb6358e06787"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Health category no disclaimer",
+    "category": "HEALTH",
+    "adText": "Best supplement for energy. Order now.",
+    "landingUrl": "https://example.com/energy",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_MISSING_DISCLAIMER"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_9ecb14812e81",
+        "chk_5652cc77d0dd"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_efd7c208a911"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Hidden disclaimer in HTML",
+    "category": "HEALTH",
+    "adText": "Supplement for joint health. Consult your doctor.",
+    "landingUrl": "https://example.com/joint",
+    "htmlText": "<div style=\"display:none\">Consult your doctor. Not medical advice.</div><p>Buy now</p>",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_HIDDEN_TEXT_HEURISTIC",
+        "RULE_MISSING_DISCLAIMER"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_5652cc77d0dd",
+        "chk_9ecb14812e81"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_dff097706c81"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [
+          "hidden text"
+        ],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Supplement with visible disclaimer",
+    "category": "HEALTH",
+    "adText": "Not evaluated by FDA. Consult your doctor. For informational purposes only.",
+    "landingUrl": "https://example.com/supplement-fda",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [],
+      "expectedPolicyChunkMustHit": [
+        "chk_5652cc77d0dd",
+        "chk_9ecb14812e81"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_f9ce2010a07f"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Clean health ad full compliance",
+    "category": "HEALTH",
+    "adText": "Wellness tips. Consult your doctor. Not intended to diagnose or treat.",
+    "landingUrl": "https://example.com/wellness-tips",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [],
+      "expectedPolicyChunkMustHit": [
+        "chk_9ecb14812e81",
+        "chk_5652cc77d0dd"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_ff20d6a6146b"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Crypto guaranteed returns",
+    "category": "FINANCE",
+    "adText": "Guaranteed 10% monthly returns. No risk investment.",
+    "landingUrl": "https://risky-example.com/crypto",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_PROHIBITED_PHRASE",
+        "RULE_LANDING_DOMAIN_RISK"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_0302a574d89f",
+        "chk_6c366f41609b"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_6f24f2dd9c64"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Loan ad clear APR",
+    "category": "FINANCE",
+    "adText": "Personal loan. APR 12%. Terms apply. Clear eligibility.",
+    "landingUrl": "https://example.com/loans",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [],
+      "expectedPolicyChunkMustHit": [
+        "chk_0302a574d89f"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_dfcb82ccfd21",
+        "chk_89c582f81f65"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Denylist domain finance",
+    "category": "FINANCE",
+    "adText": "Get your loan today. Best rates.",
+    "landingUrl": "https://phish-demo.net/loan",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_LANDING_DOMAIN_RISK"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_0302a574d89f"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_988a62f0b27a"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Finance risk disclaimer present",
+    "category": "FINANCE",
+    "adText": "Past performance does not guarantee future results. Investment carries risk.",
+    "landingUrl": "https://example.com/invest",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [],
+      "expectedPolicyChunkMustHit": [
+        "chk_0302a574d89f",
+        "chk_5652cc77d0dd"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_41119a314e39"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Redirect to different domain",
+    "category": "GENERAL",
+    "adText": "Great product. Click to learn more.",
+    "landingUrl": "https://example.com/promo",
+    "redirectChain": [
+      {
+        "url": "https://example.com/promo"
+      },
+      {
+        "url": "https://unrelated-offer.net/landing"
+      }
+    ],
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_SUSPICIOUS_REDIRECTS",
+        "RULE_REDIRECT_COUNT"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_7ca0230ab653"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_dc56e13015fe"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [
+          "multi-hop redirect",
+          "multi-hop"
+        ],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Single redirect same brand",
+    "category": "GENERAL",
+    "adText": "Brand sale. Shop now.",
+    "landingUrl": "https://example.com/sale",
+    "redirectChain": [
+      {
+        "url": "https://example.com/sale"
+      },
+      {
+        "url": "https://example.com/shop"
+      }
+    ],
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_SUSPICIOUS_REDIRECTS"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_7ca0230ab653"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_2a7dfd9fed1c"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [
+          "multi-hop redirect",
+          "multi-hop"
+        ],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Multiple redirects cloaking risk",
+    "category": "GENERAL",
+    "adText": "Special offer.",
+    "landingUrl": "https://example.com/offer",
+    "redirectChain": [
+      {
+        "url": "https://example.com/offer"
+      },
+      {
+        "url": "https://mid.net/redirect"
+      },
+      {
+        "url": "https://other-domain.com/final"
+      }
+    ],
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_SUSPICIOUS_REDIRECTS",
+        "RULE_REDIRECT_COUNT"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_7ca0230ab653"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_50412d3a4e59"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [
+          "multi-hop redirect",
+          "multi-hop"
+        ],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Evasion via redirect",
+    "category": "HEALTH",
+    "adText": "Health product. Best supplement.",
+    "landingUrl": "https://example.com/health",
+    "redirectChain": [
+      {
+        "url": "https://example.com/health"
+      },
+      {
+        "url": "https://finance-offer.net/loan"
+      }
+    ],
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_SUSPICIOUS_REDIRECTS"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_7ca0230ab653",
+        "chk_9ecb14812e81"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_cf27bb56a644"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [
+          "multi-hop redirect",
+          "multi-hop"
+        ],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Health and redirect combined",
+    "category": "HEALTH",
+    "adText": "Supplement. Order now. No disclaimer here.",
+    "landingUrl": "https://example.com/supp",
+    "redirectChain": [
+      {
+        "url": "https://example.com/supp"
+      },
+      {
+        "url": "https://other.com/page"
+      }
+    ],
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_MISSING_DISCLAIMER",
+        "RULE_SUSPICIOUS_REDIRECTS"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_9ecb14812e81",
+        "chk_5652cc77d0dd",
+        "chk_7ca0230ab653"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_0ef2c1725d35"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [
+          "multi-hop redirect",
+          "multi-hop"
+        ],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Prohibited phrase act now",
+    "category": "GENERAL",
+    "adText": "Act now or miss out. Limited time only. Get rich quick.",
+    "landingUrl": "https://example.com/deal",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_PROHIBITED_PHRASE"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_6c366f41609b"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_e2d7c21d0f7f"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Guaranteed results phrase",
+    "category": "FINANCE",
+    "adText": "Guaranteed results. 100% free to try. Sign up now.",
+    "landingUrl": "https://example.com/trial",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_PROHIBITED_PHRASE"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_6c366f41609b",
+        "chk_0302a574d89f"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_e2d7c21d0f7f"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Misleading before-after",
+    "category": "GENERAL",
+    "adText": "Before and after results. Guaranteed results. No substantiation.",
+    "landingUrl": "https://example.com/skincare",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_PROHIBITED_PHRASE"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_6c366f41609b",
+        "chk_2a422466811f"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_39879fb712fe"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Hidden text over threshold",
+    "category": "GENERAL",
+    "adText": "Great product. Click to learn more.",
+    "landingUrl": "https://example.com/product",
+    "htmlText": "<span style=\"display:none\">hidden</span> <div style=\"visibility:hidden\">secret</div> <p style=\"font-size:0\">tiny</p> <span style=\"display:none\">x</span> <div style=\"visibility:hidden\">y</div> <p style=\"font-size:0\">z</p>",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_HIDDEN_TEXT_HEURISTIC"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_5652cc77d0dd",
+        "chk_82db9a79c1bb"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_fb70c993ec40"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [
+          "hidden text"
+        ],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Dating ad age-gated",
+    "category": "DATING",
+    "adText": "Meet people. Age gate on landing. No false promises.",
+    "landingUrl": "https://example.com/dating",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [],
+      "expectedPolicyChunkMustHit": [
+        "chk_5a833a459500"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_7e7107a00765"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Gambling ad jurisdiction",
+    "category": "GAMBLING",
+    "adText": "Play responsibly. Jurisdiction disclaimer. Age restrictions apply.",
+    "landingUrl": "https://example.com/gaming",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [],
+      "expectedPolicyChunkMustHit": [
+        "chk_5a833a459500"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_15001c06e156"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "General ad clean copy",
+    "category": "GENERAL",
+    "adText": "Product sale. No prohibited phrases. Landing matches ad.",
+    "landingUrl": "https://example.com/product",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [],
+      "expectedPolicyChunkMustHit": [
+        "chk_5a833a459500",
+        "chk_82db9a79c1bb"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_bd73f1630537"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Landing domain mismatch",
+    "category": "GENERAL",
+    "adText": "Brand A product. Best quality.",
+    "landingUrl": "https://brand-a.com",
+    "redirectChain": [
+      {
+        "url": "https://brand-a.com"
+      },
+      {
+        "url": "https://brand-b.com/same-product"
+      }
+    ],
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_SUSPICIOUS_REDIRECTS"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_7ca0230ab653"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_badf8ae5607c"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [
+          "multi-hop redirect",
+          "multi-hop"
+        ],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Blocked domain landing",
+    "category": "FINANCE",
+    "adText": "Get your loan. Best rates.",
+    "landingUrl": "https://blocked-test.org/loan",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_LANDING_DOMAIN_RISK"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_0302a574d89f"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_988a62f0b27a"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "100% free prohibited phrase",
+    "category": "GENERAL",
+    "adText": "100% free trial. Act now or miss out. Sign up.",
+    "landingUrl": "https://example.com/trial",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_PROHIBITED_PHRASE"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_6c366f41609b"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_e2d7c21d0f7f"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Health supplement unsubstantiated claim",
+    "category": "HEALTH",
+    "adText": "Cures joint pain. No disclaimer. Order now.",
+    "landingUrl": "https://example.com/pain",
+    "htmlText": "<p style=\"visibility:hidden\">Disclaimer here</p><p style=\"visibility:hidden\">Disclaimer here</p><p style=\"visibility:hidden\">Disclaimer here</p>",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_PROHIBITED_PHRASE",
+        "RULE_MISSING_DISCLAIMER"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_9ecb14812e81",
+        "chk_6c366f41609b"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_82ddfd2c2a79"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [
+          "hidden text"
+        ],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Finance loan clear terms",
+    "category": "FINANCE",
+    "adText": "Short-term loan. APR and terms in ad and on landing.",
+    "landingUrl": "https://example.com/short-loan",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [],
+      "expectedPolicyChunkMustHit": [
+        "chk_0302a574d89f"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_89c582f81f65"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "General product no violations",
+    "category": "GENERAL",
+    "adText": "Product sale. Clear terms. No prohibited language.",
+    "landingUrl": "https://example.com/shop",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [],
+      "expectedPolicyChunkMustHit": [
+        "chk_5a833a459500",
+        "chk_82db9a79c1bb"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_bd73f1630537"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Health for informational purposes",
+    "category": "HEALTH",
+    "adText": "For informational purposes only. Consult your doctor. Wellness tips.",
+    "landingUrl": "https://example.com/info",
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [],
+      "expectedPolicyChunkMustHit": [
+        "chk_9ecb14812e81",
+        "chk_5652cc77d0dd"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_eb6358e06787"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  },
+  {
+    "title": "Redirect chain length two",
+    "category": "GENERAL",
+    "adText": "Offer. Click here.",
+    "landingUrl": "https://a.com",
+    "redirectChain": [
+      {
+        "url": "https://a.com"
+      },
+      {
+        "url": "https://a.com/final"
+      }
+    ],
+    "groundTruth": {
+      "expectedTriggeredRuleIds": [
+        "RULE_SUSPICIOUS_REDIRECTS"
+      ],
+      "expectedPolicyChunkMustHit": [
+        "chk_7ca0230ab653"
+      ],
+      "expectedPrecedentMustHit": [
+        "chk_2a7dfd9fed1c"
+      ],
+      "expectedAdvisory": {
+        "mustContainSignals": [
+          "multi-hop redirect",
+          "multi-hop"
+        ],
+        "maxInvalidCitations": 0,
+        "nonBindingNoticeRequired": true
+      }
+    }
+  }
+]

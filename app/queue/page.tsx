@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { isDemoMode } from "@/lib/runtime/mode";
+import { demoQueueItems } from "@/lib/demo/data";
 
 export const dynamic = "force-dynamic";
 import { Badge } from "@/components/ui/badge";
@@ -67,20 +68,35 @@ export default async function QueuePage({
   const statusFilter = params.status as string | undefined;
   const sort = params.sort ?? "riskDesc";
 
-  const items = await prisma.queueItem.findMany({
-    where: statusFilter ? { status: statusFilter as "OPEN" | "IN_REVIEW" | "CLOSED" } : undefined,
-    include: {
-      case: true,
-    },
-    orderBy:
-      sort === "riskDesc"
-        ? { riskScore: "desc" }
-        : sort === "riskAsc"
-          ? { riskScore: "asc" }
-          : sort === "createdDesc"
-            ? { createdAt: "desc" }
-            : { createdAt: "asc" },
-  });
+  let items: { id: string; caseId: string; riskScore: number; tier: string; status: string; createdAt: Date; case: { id: string; status: string; category: string; createdAt: Date } }[];
+  if (isDemoMode()) {
+    let list = [...demoQueueItems];
+    if (statusFilter) {
+      list = list.filter((i) => i.status === statusFilter);
+    }
+    list.sort((a, b) => {
+      if (sort === "riskDesc") return b.riskScore - a.riskScore;
+      if (sort === "riskAsc") return a.riskScore - b.riskScore;
+      if (sort === "createdDesc") return b.createdAt.getTime() - a.createdAt.getTime();
+      if (sort === "createdAsc") return a.createdAt.getTime() - b.createdAt.getTime();
+      return 0;
+    });
+    items = list;
+  } else {
+    const { prisma } = await import("@/lib/db");
+    items = await prisma.queueItem.findMany({
+      where: statusFilter ? { status: statusFilter as "OPEN" | "IN_REVIEW" | "CLOSED" } : undefined,
+      include: { case: true },
+      orderBy:
+        sort === "riskDesc"
+          ? { riskScore: "desc" }
+          : sort === "riskAsc"
+            ? { riskScore: "asc" }
+            : sort === "createdDesc"
+              ? { createdAt: "desc" }
+              : { createdAt: "asc" },
+    });
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
@@ -167,7 +183,7 @@ export default async function QueuePage({
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={caseStatusVariant(item.case.status)}>{item.case.status}</Badge>
+                    <Badge variant={caseStatusVariant(item.case.status)} data-testid={`queue-status-${item.caseId}`}>{item.case.status}</Badge>
                     {item.case.status === "CAPTURING" && (
                       <span className="ml-2 text-xs text-text-muted">Capturing evidence…</span>
                     )}

@@ -1,0 +1,4 @@
+{
+  "ignore": ["prisma/migrations/**"],
+  "ignoreDependencies": []
+}

@@ -5,9 +5,7 @@ const dnsLookup = promisify(lookup);
 
 const MAX_URL_LENGTH = 2048;
 
-const BLOCKED_SCHEMES = new Set(["file", "data", "javascript", "vbscript", "ftp"]);
-
-const BLOCKED_HOSTNAMES = new Set([
+export const BLOCKED_HOSTNAMES = new Set([
   "localhost",
   "127.0.0.1",
   "::1",
@@ -15,6 +13,11 @@ const BLOCKED_HOSTNAMES = new Set([
   "169.254.169.254",
   "100.100.100.200",
 ]);
+
+/** Pure helper for tests: true if hostname is in blocked list (no DNS). */
+export function isBlockedHostname(hostname: string): boolean {
+  return BLOCKED_HOSTNAMES.has(hostname.toLowerCase());
+}
 
 function isPrivateOrBlocked(ip: string): boolean {
   if (BLOCKED_HOSTNAMES.has(ip.toLowerCase())) return true;

@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  DATABASE_URL: postgresql://beacongate:beacongate@localhost:5432/beacongate_test
+  REDIS_URL: redis://localhost:6379
+  EVIDENCE_STORAGE_DIR: ./storage/evidence
+  LLM_PROVIDER_FORCE: mock
+  EMBEDDING_PROVIDER: local
+
+jobs:
+  lint-typecheck-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm run test:unit
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: lint-typecheck-unit
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: beacongate
+          POSTGRES_PASSWORD: beacongate
+          POSTGRES_DB: beacongate_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U beacongate"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Prisma generate
+        run: npx prisma generate
+
+      - name: Run migrations
+        run: npx prisma migrate deploy
+
+      - name: Seed database
+        run: npm run db:seed
+
+      - name: RAG ingest
+        run: npm run rag:ingest
+
+      - name: Unit tests (with DB for integration tests)
+        run: npm run test:unit
+
+      - name: Start Next.js
+        run: npm run dev &
+        env:
+          PORT: 3000
+
+      - name: Start worker
+        run: npm run worker &
+
+      - name: Wait for app
+        run: npx wait-on -t 60000 http://localhost:3000
+
+      - name: Run E2E
+        run: npm run test:e2e
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:3000

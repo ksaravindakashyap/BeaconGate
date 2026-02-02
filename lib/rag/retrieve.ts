@@ -11,8 +11,9 @@ import { embedOne, EMBEDDING_MODEL, EMBEDDING_DIMS } from "./embeddings";
 
 const DEFAULT_TOP_K = 6;
 
-export interface RetrievalResultItem {
+interface RetrievalResultItem {
   chunkId: string;
+  stableChunkId: string | null;
   documentId: string;
   documentTitle: string;
   docType: "POLICY" | "PRECEDENT";
@@ -52,27 +53,33 @@ export function buildQueryText(params: {
 }
 
 /**
- * Run retrieval for a case: embed query, search policy + precedent, store RetrievalRun.
+ * Phase 5: Run retrieval without persisting (for eval harness).
+ * Same logic as runRetrieval but does not create RetrievalRun.
  */
-export async function runRetrieval(
-  caseId: string,
+export async function runRetrievalQueryOnly(
   queryText: string,
   options: { topK?: number; retrievalType?: "POLICY_ONLY" | "PRECEDENT_ONLY" | "BOTH" } = {}
 ): Promise<RetrievalRunResult> {
-  const topK = options.topK ?? DEFAULT_TOP_K;
-  const retrievalType = options.retrievalType ?? "BOTH";
   const queryVector = await embedOne(queryText);
   if (queryVector.length !== EMBEDDING_DIMS) throw new Error("Embedding dim mismatch");
   const vectorStr = "[" + queryVector.join(",") + "]";
+  return runRetrievalCore(vectorStr, options);
+}
 
+async function runRetrievalCore(
+  vectorStr: string,
+  options: { topK?: number; retrievalType?: "POLICY_ONLY" | "PRECEDENT_ONLY" | "BOTH" }
+): Promise<RetrievalRunResult> {
+  const topK = options.topK ?? DEFAULT_TOP_K;
+  const retrievalType = options.retrievalType ?? "BOTH";
   const policyItems: RetrievalResultItem[] = [];
   const precedentItems: RetrievalResultItem[] = [];
 
   if (retrievalType === "POLICY_ONLY" || retrievalType === "BOTH") {
     const rows = await prisma.$queryRaw<
-      { chunkId: string; documentId: string; title: string; content: string; score: number }[]
+      { chunkId: string; stableId: string | null; documentId: string; title: string; content: string; score: number }[]
     >`
-      SELECT kc.id AS "chunkId", kd.id AS "documentId", kd.title, kc.content,
+      SELECT kc.id AS "chunkId", kc."stableId" AS "stableId", kd.id AS "documentId", kd.title, kc.content,
              (1 - (ke.embedding <=> ${vectorStr}::vector))::float AS score
       FROM "KnowledgeEmbedding" ke
       JOIN "KnowledgeChunk" kc ON ke."chunkId" = kc.id
@@ -84,6 +91,7 @@ export async function runRetrieval(
     for (const r of rows) {
       policyItems.push({
         chunkId: r.chunkId,
+        stableChunkId: r.stableId,
         documentId: r.documentId,
         documentTitle: r.title,
         docType: "POLICY",
@@ -96,9 +104,9 @@ export async function runRetrieval(
 
   if (retrievalType === "PRECEDENT_ONLY" || retrievalType === "BOTH") {
     const rows = await prisma.$queryRaw<
-      { chunkId: string; documentId: string; title: string; content: string; score: number }[]
+      { chunkId: string; stableId: string | null; documentId: string; title: string; content: string; score: number }[]
     >`
-      SELECT kc.id AS "chunkId", kd.id AS "documentId", kd.title, kc.content,
+      SELECT kc.id AS "chunkId", kc."stableId" AS "stableId", kd.id AS "documentId", kd.title, kc.content,
              (1 - (ke.embedding <=> ${vectorStr}::vector))::float AS score
       FROM "KnowledgeEmbedding" ke
       JOIN "KnowledgeChunk" kc ON ke."chunkId" = kc.id
@@ -110,6 +118,7 @@ export async function runRetrieval(
     for (const r of rows) {
       precedentItems.push({
         chunkId: r.chunkId,
+        stableChunkId: r.stableId,
         documentId: r.documentId,
         documentTitle: r.title,
         docType: "PRECEDENT",
@@ -120,7 +129,23 @@ export async function runRetrieval(
     }
   }
 
-  const results: RetrievalRunResult = { policy: policyItems, precedent: precedentItems };
+  return { policy: policyItems, precedent: precedentItems };
+}
+
+/**
+ * Run retrieval for a case: embed query, search policy + precedent, store RetrievalRun.
+ */
+export async function runRetrieval(
+  caseId: string,
+  queryText: string,
+  options: { topK?: number; retrievalType?: "POLICY_ONLY" | "PRECEDENT_ONLY" | "BOTH" } = {}
+): Promise<RetrievalRunResult> {
+  const topK = options.topK ?? DEFAULT_TOP_K;
+  const retrievalType = options.retrievalType ?? "BOTH";
+  const queryVector = await embedOne(queryText);
+  if (queryVector.length !== EMBEDDING_DIMS) throw new Error("Embedding dim mismatch");
+  const vectorStr = "[" + queryVector.join(",") + "]";
+  const results = await runRetrievalCore(vectorStr, options);
   await prisma.retrievalRun.create({
     data: {
       caseId,

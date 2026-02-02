@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/db";
+import { isDemoMode } from "@/lib/runtime/mode";
+import { demoDashboardStats } from "@/lib/demo/data";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -12,51 +13,58 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const [backlogCount, decidedCases, highRiskBacklog] = await Promise.all([
-    prisma.queueItem.count({
-      where: { status: { in: ["OPEN", "IN_REVIEW"] } },
-    }),
-    prisma.reviewDecision.findMany({
-      include: {
-        case: {
-          include: { queueItem: true },
+  let backlogCount: number;
+  let avgHours: string;
+  let decisionsLast7Days: number;
+  let decisionsToday: number;
+  let highRiskBacklog: number;
+  let decisionsByDay: Record<string, number>;
+
+  if (isDemoMode()) {
+    const stats = demoDashboardStats;
+    backlogCount = stats.backlogCount;
+    avgHours = stats.avgTimeToDecisionHours;
+    decisionsLast7Days = stats.decisionsLast7Days;
+    decisionsToday = stats.decisionsToday;
+    highRiskBacklog = stats.highRiskBacklog;
+    decisionsByDay = Object.fromEntries(stats.decisionsByDay.map(({ date, count }) => [date, count]));
+  } else {
+    const { prisma } = await import("@/lib/db");
+    const [backlogCountRes, decidedCases, highRiskBacklogRes] = await Promise.all([
+      prisma.queueItem.count({
+        where: { status: { in: ["OPEN", "IN_REVIEW"] } },
+      }),
+      prisma.reviewDecision.findMany({
+        include: {
+          case: { include: { queueItem: true } },
         },
-      },
-    }),
-    prisma.queueItem.count({
-      where: {
-        tier: "HIGH",
-        status: { in: ["OPEN", "IN_REVIEW"] },
-      },
-    }),
-  ]);
-
-  const now = new Date();
-  const oneDayMs = 24 * 60 * 60 * 1000;
-  const decisionsByDay: Record<string, number> = {};
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(now.getTime() - i * oneDayMs);
-    const key = d.toISOString().slice(0, 10);
-    decisionsByDay[key] = 0;
-  }
-  for (const d of decidedCases) {
-    const key = d.decidedAt.toISOString().slice(0, 10);
-    if (key in decisionsByDay) decisionsByDay[key]++;
-  }
-  const decisionsLast7Days = Object.values(decisionsByDay).reduce((a, b) => a + b, 0);
-  const decisionsToday = decisionsByDay[now.toISOString().slice(0, 10)] ?? 0;
-
-  let avgTimeToDecisionMs: number | null = null;
-  if (decidedCases.length > 0) {
-    let totalMs = 0;
-    for (const d of decidedCases) {
-      const caseCreated = d.case.createdAt.getTime();
-      const decidedAt = d.decidedAt.getTime();
-      totalMs += decidedAt - caseCreated;
+      }),
+      prisma.queueItem.count({
+        where: { tier: "HIGH", status: { in: ["OPEN", "IN_REVIEW"] } },
+      }),
+    ]);
+    backlogCount = backlogCountRes;
+    highRiskBacklog = highRiskBacklogRes;
+    const now = new Date();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    decisionsByDay = {};
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(now.getTime() - i * oneDayMs);
+      decisionsByDay[d.toISOString().slice(0, 10)] = 0;
     }
-    avgTimeToDecisionMs = totalMs / decidedCases.length;
+    for (const d of decidedCases) {
+      const key = d.decidedAt.toISOString().slice(0, 10);
+      if (key in decisionsByDay) decisionsByDay[key]++;
+    }
+    decisionsLast7Days = Object.values(decisionsByDay).reduce((a, b) => a + b, 0);
+    decisionsToday = decisionsByDay[now.toISOString().slice(0, 10)] ?? 0;
+    let avgTimeToDecisionMs: number | null = null;
+    if (decidedCases.length > 0) {
+      const totalMs = decidedCases.reduce((sum, d) => sum + d.decidedAt.getTime() - d.case.createdAt.getTime(), 0);
+      avgTimeToDecisionMs = totalMs / decidedCases.length;
+    }
+    avgHours = avgTimeToDecisionMs != null ? (avgTimeToDecisionMs / (60 * 60 * 1000)).toFixed(1) : "—";
   }
-  const avgHours = avgTimeToDecisionMs != null ? (avgTimeToDecisionMs / (60 * 60 * 1000)).toFixed(1) : "—";
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">

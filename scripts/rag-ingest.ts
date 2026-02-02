@@ -7,7 +7,7 @@ require("dotenv").config({ path: require("path").join(__dirname, "..", ".env") }
 const path = require("path");
 const fs = require("fs").promises;
 const { prisma } = require("../lib/db");
-const { chunkPolicyDocument, chunkPrecedentEntry } = require("../lib/rag/chunker");
+const { chunkPolicyDocument, chunkPrecedentEntry, computeStableChunkId } = require("../lib/rag/chunker");
 const { embed, EMBEDDING_DIMS, EMBEDDING_MODEL } = require("../lib/rag/embeddings");
 const { randomBytes } = require("crypto");
 
@@ -42,12 +42,14 @@ async function ingestPolicies(ragDir: string) {
     const chunks = chunkPolicyDocument(content, source);
     for (let i = 0; i < chunks.length; i++) {
       const { content: chunkContent, contentHash } = chunks[i];
+      const stableId = computeStableChunkId(source, i, contentHash);
       const chunk = await prisma.knowledgeChunk.create({
         data: {
           documentId: doc.id,
           chunkIndex: i,
           content: chunkContent,
           contentHash,
+          stableId,
         },
       });
       const [vec] = await embed([chunkContent]);
@@ -90,14 +92,17 @@ async function ingestPrecedents(ragDir: string) {
       e.outcome ?? "",
       e.rationale ?? ""
     );
+    const precedentSource = `Precedent: ${title}`;
     for (let i = 0; i < chunks.length; i++) {
       const { content: chunkContent, contentHash } = chunks[i];
+      const stableId = computeStableChunkId(precedentSource, i, contentHash);
       const chunk = await prisma.knowledgeChunk.create({
         data: {
           documentId: doc.id,
           chunkIndex: i,
           content: chunkContent,
           contentHash,
+          stableId,
         },
       });
       const [vec] = await embed([chunkContent]);

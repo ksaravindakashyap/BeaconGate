@@ -167,14 +167,20 @@ model RuleRun {
 }
 
 model LLMRun {
-  id           String   @id @default(cuid())
-  caseId       String
-  case         Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
-  createdAt    DateTime @default(now())
-  advisoryText String
-  model        String
-  temperature  Float
-  promptVersion String
+  id             String    @id @default(cuid())
+  caseId         String
+  case           Case      @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  createdAt      DateTime  @default(now())
+  provider       String    // "openai" | "mock"
+  model          String
+  temperature    Float
+  promptVersion  String
+  inputHash      String
+  advisoryText   String
+  advisoryJson   Json?
+  citationsJson  Json?
+  errorMessage   String?
+  latencyMs      Int?
 }
 
 model QueueItem {
@@ -224,15 +230,16 @@ model KnowledgeChunk {
   chunkIndex  Int
   content     String
   contentHash String
+  stableId    String?   @unique
   tokenCount  Int?
   createdAt   DateTime  @default(now())
-  embedding   KnowledgeEmbedding?
+  embeddings  KnowledgeEmbedding[]
 }
 
 model KnowledgeEmbedding {
-  id        String   @id @default(cuid())
+  id        String           @id @default(cuid())
   chunkId   String
-  chunk     KnowledgeChunk @relation(fields: [chunkId], references: [id], onDelete: Cascade)
+  chunk     KnowledgeChunk   @relation(fields: [chunkId], references: [id], onDelete: Cascade)
   dims      Int
   model     String
   embedding Unsupported("vector(384)")
@@ -252,4 +259,38 @@ model RetrievalRun {
   topK        Int
   results     Json
   notes       String?
+}
+
+// Phase 5: Evaluation harness
+model EvalSuite {
+  id          String    @id @default(cuid())
+  name        String
+  createdAt   DateTime  @default(now())
+  description String?
+  cases       EvalCase[]
+  runs        EvalRun[]
+}
+
+model EvalCase {
+  id            String    @id @default(cuid())
+  suiteId       String
+  suite         EvalSuite @relation(fields: [suiteId], references: [id], onDelete: Cascade)
+  title         String
+  category      Category
+  adText        String
+  landingUrl    String
+  htmlText      String?
+  redirectChain Json?
+  groundTruth   Json
+}
+
+model EvalRun {
+  id         String    @id @default(cuid())
+  suiteId   String
+  suite     EvalSuite @relation(fields: [suiteId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  config    Json
+  results   Json
+  summary   String
+  durationMs Int
 }

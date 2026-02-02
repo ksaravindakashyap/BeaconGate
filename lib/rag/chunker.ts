@@ -14,9 +14,19 @@ function sha256Hex(text: string): string {
 }
 
 /**
+ * Phase 5: Deterministic stable chunk ID for evaluation.
+ * stableId = chk_<first12(sha256(source + "|" + chunkIndex + "|" + contentHash))>
+ */
+export function computeStableChunkId(source: string, chunkIndex: number, contentHash: string): string {
+  const payload = `${source}|${chunkIndex}|${contentHash}`;
+  const hash = createHash("sha256").update(payload, "utf8").digest("hex");
+  return "chk_" + hash.slice(0, 12);
+}
+
+/**
  * Split markdown by ## headings first, then by paragraphs, then by fixed size with overlap.
  */
-export function chunkPolicyDocument(content: string, source: string): { content: string; contentHash: string }[] {
+export function chunkPolicyDocument(content: string, _source: string): { content: string; contentHash: string }[] {
   const chunks: { content: string; contentHash: string }[] = [];
   const sections = content.split(/(?=^##\s)/m).filter(Boolean);
   for (const section of sections) {

@@ -77,5 +77,3 @@ export const RULES_CONFIG = [
     },
   },
 ] as const;
-
-export type RuleId = (typeof RULES_CONFIG)[number]["id"];

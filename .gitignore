@@ -6,6 +6,9 @@
 
 # Testing
 /coverage
+e2e/.e2e-services-started
+e2e/.worker.pid
+e2e/.env.e2e
 
 # Next.js
 /.next/

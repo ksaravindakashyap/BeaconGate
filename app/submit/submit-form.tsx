@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useRouter } from "next/navigation";
 import { submitCase } from "@/app/actions/submit-case";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,11 +15,20 @@ const CATEGORIES = [
   { value: "GAMBLING", label: "Gambling" },
 ] as const;
 
-export function SubmitForm() {
+export function SubmitForm({ demoRedirectCaseId }: { demoRedirectCaseId?: string }) {
+  const router = useRouter();
   const [state, formAction] = useActionState(submitCase, null);
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    if (demoRedirectCaseId) {
+      e.preventDefault();
+      router.push(`/case/${demoRedirectCaseId}`);
+      return;
+    }
+  };
+
   return (
-    <form action={formAction} className="space-y-6">
+    <form action={demoRedirectCaseId ? undefined : formAction} onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="adText">Ad text</Label>
         <textarea
@@ -26,6 +36,7 @@ export function SubmitForm() {
           name="adText"
           required
           rows={4}
+          data-testid="submit-adText"
           className="flex w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
           placeholder="Paste or type the ad creative text..."
         />
@@ -56,6 +67,7 @@ export function SubmitForm() {
           type="url"
           required
           placeholder="https://example.com/landing"
+          data-testid="submit-landingUrl"
         />
         {state?.error?.landingUrl && (
           <p className="text-xs text-danger">{state.error.landingUrl.join(" ")}</p>
@@ -64,7 +76,7 @@ export function SubmitForm() {
       <p className="text-xs text-text-muted">
         Optional screenshot upload is not available in Phase 1. Evidence will store the URL and a hash.
       </p>
-      <Button type="submit" size="lg">
+      <Button type="submit" size="lg" data-testid="submit-case-btn">
         Submit case
       </Button>
     </form>

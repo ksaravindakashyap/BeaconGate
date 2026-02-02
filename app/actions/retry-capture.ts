@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { addEvidenceCaptureJob } from "@/lib/queue";
 import { revalidatePath } from "next/cache";
 
-export async function retryCapture(caseId: string) {
+async function retryCapture(caseId: string) {
   const c = await prisma.case.findUnique({
     where: { id: caseId },
     include: { evidence: true },

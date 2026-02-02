@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Gowun_Batang } from "next/font/google";
 import { Nav } from "@/components/nav";
+import { DemoBanner } from "@/components/DemoBanner";
 import "./globals.css";
 
 const gowunBatang = Gowun_Batang({
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang="en" className={gowunBatang.variable}>
       <body className="min-h-screen font-sans">
         <Nav />
+        <DemoBanner />
         {children}
       </body>
     </html>

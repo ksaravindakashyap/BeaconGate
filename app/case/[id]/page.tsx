@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { isDemoMode } from "@/lib/runtime/mode";
+import { getDemoCase, demoRedirectData, demoNetworkData } from "@/lib/demo/data";
+import { DemoCaseView } from "./DemoCaseView";
 import { Badge } from "@/components/ui/badge";
 
 export const dynamic = "force-dynamic";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { submitDecision } from "@/app/actions/submit-decision";
 import { generateAdvisory } from "@/app/actions/generate-advisory";
 import { retryCaptureForm } from "@/app/actions/retry-capture";
 import { runRetrievalFormAction } from "@/app/actions/run-retrieval";
@@ -19,8 +20,6 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
-import path from "path";
-import fs from "fs/promises";
 
 export default async function CasePage({
   params,
@@ -31,6 +30,27 @@ export default async function CasePage({
 }) {
   const { id } = await params;
   const sp = await searchParams;
+
+  if (isDemoMode()) {
+    const demoCase = getDemoCase(id);
+    if (!demoCase) {
+      return (
+        <div className="mx-auto max-w-6xl px-6 py-10">
+          <p className="text-text-primary">Demo case not found.</p>
+          <Link href="/queue" className="mt-2 inline-block text-sm text-accent hover:underline">
+            Back to queue
+          </Link>
+        </div>
+      );
+    }
+    const redirectData = id === "demo-redirect" ? demoRedirectData : [];
+    const networkData = id === "demo-redirect" ? demoNetworkData : [];
+    return <DemoCaseView case={demoCase} id={id} redirectData={redirectData} networkData={networkData} />;
+  }
+
+  const { default: path } = await import("path");
+  const { default: fs } = await import("fs/promises");
+  const { prisma } = await import("@/lib/db");
   const c = await prisma.case.findUnique({
     where: { id },
     include: {
@@ -128,7 +148,12 @@ export default async function CasePage({
         </div>
       )}
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-text-primary">Case {id.slice(0, 8)}…</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-text-primary">Case {id.slice(0, 8)}…</h1>
+          <Badge variant={caseToRender.status === "DECIDED" ? "default" : caseToRender.status === "CAPTURING" ? "medium" : "accent"} data-testid="case-status">
+            {caseToRender.status}
+          </Badge>
+        </div>
         <Link href="/queue" className="text-sm text-accent hover:underline">
           ← Back to queue
         </Link>
@@ -153,6 +178,7 @@ export default async function CasePage({
                             ? "high"
                             : "medium"
                       }
+                      data-testid="capture-status"
                     >
                       {caseToRender.evidence.currentCaptureRun.status}
                     </Badge>
@@ -182,7 +208,7 @@ export default async function CasePage({
                   {caseToRender.evidence.currentCaptureRun.status === "FAILED" && (
                     <form action={retryCaptureForm}>
                       <input type="hidden" name="caseId" value={id} />
-                      <Button type="submit" variant="secondary" size="sm">
+                      <Button type="submit" variant="secondary" size="sm" data-testid="retry-capture-btn">
                         Retry capture
                       </Button>
                     </form>
@@ -265,7 +291,7 @@ export default async function CasePage({
                 </>
               ) : caseToRender.status === "CAPTURING" ? (
                 <div className="flex items-center gap-2">
-                  <Badge variant="medium">QUEUED</Badge>
+                  <Badge variant="medium" data-testid="capture-status">QUEUED</Badge>
                   <span className="text-sm text-text-muted">Capturing evidence…</span>
                 </div>
               ) : (
@@ -334,7 +360,7 @@ export default async function CasePage({
               {caseToRender.retrievalRuns.length === 0 ? (
                 <form action={runRetrievalFormAction}>
                   <input type="hidden" name="caseId" value={id} />
-                  <Button type="submit" variant="secondary" size="sm">
+                  <Button type="submit" variant="secondary" size="sm" data-testid="run-retrieval-btn">
                     Run Retrieval
                   </Button>
                 </form>
@@ -459,25 +485,121 @@ export default async function CasePage({
             <CardHeader>
               <CardTitle>LLM Advisory (non-binding)</CardTitle>
             </CardHeader>
-            <CardContent>
-              {caseToRender.llmRuns.length > 0 ? (
-                <div className="rounded-md border border-border bg-surface-elevated p-4">
-                  <p className="text-xs font-medium text-text-muted mb-2">
-                    Advisory only — not used as the basis for the final decision.
-                  </p>
-                  <p className="text-sm text-text-primary">{caseToRender.llmRuns[0].advisoryText}</p>
-                </div>
-              ) : (
-                <div className="rounded-md border border-border bg-surface-elevated p-4">
-                  <p className="text-sm text-text-muted mb-3">No advisory generated yet.</p>
-                  <form action={generateAdvisory}>
-                    <input type="hidden" name="caseId" value={id} />
-                    <Button type="submit" variant="secondary" size="sm">
-                      Generate advisory (mock)
-                    </Button>
-                  </form>
-                </div>
-              )}
+            <CardContent className="space-y-4">
+              {(() => {
+                const latestRun = [...caseToRender.llmRuns].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+                const canGenerate = caseToRender.status === "READY_FOR_REVIEW" || caseToRender.status === "IN_REVIEW";
+                const advisory = latestRun?.advisoryJson as {
+                  summary?: string;
+                  claims?: { text: string; type: string; risk: string; evidence?: { source: string; quote: string; pointer: string }[] }[];
+                  evasionSignals?: { signal: string; severity: string; evidence?: { source: string; pointer: string; quote: string }[] }[];
+                  policyConcerns?: { concern: string; severity: string; policyCitations?: { chunkId: string; documentTitle: string; snippet: string }[] }[];
+                  recommendedReviewerQuestions?: string[];
+                  recommendedNextActions?: { action: string; priority: string }[];
+                } | null;
+                return (
+                  <>
+                    {latestRun?.errorMessage && (
+                      <p className="text-sm text-text-muted rounded-md border border-border bg-surface-elevated p-3">
+                        Last run error: {latestRun.errorMessage}
+                      </p>
+                    )}
+                    {latestRun && !latestRun.errorMessage && (
+                      <div className="space-y-3">
+                        <p className="text-xs text-text-muted">
+                          {latestRun.model} · {latestRun.promptVersion} · {new Date(latestRun.createdAt).toLocaleString()}
+                          {latestRun.latencyMs != null && ` · ${latestRun.latencyMs}ms`}
+                        </p>
+                        <p className="text-xs text-text-muted" title={latestRun.inputHash}>
+                          inputHash: {String(latestRun.inputHash).slice(0, 12)}…
+                        </p>
+                        <p className="text-sm text-text-primary">{latestRun.advisoryText}</p>
+                        {advisory && (
+                          <div className="space-y-3 border-t border-border-soft pt-3">
+                            {advisory.claims && advisory.claims.length > 0 && (
+                              <details className="rounded border border-border bg-surface-elevated">
+                                <summary className="cursor-pointer p-2 text-sm font-medium text-text-primary">Claims</summary>
+                                <ul className="list-inside list-disc space-y-1 p-2 text-sm text-text-muted">
+                                  {advisory.claims.map((c, i) => (
+                                    <li key={i}>
+                                      <span className="text-text-primary">{c.text}</span>
+                                      <Badge variant={c.risk === "high" ? "high" : c.risk === "medium" ? "medium" : "low"} className="ml-2">{c.risk}</Badge>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </details>
+                            )}
+                            {advisory.evasionSignals && advisory.evasionSignals.length > 0 && (
+                              <details className="rounded border border-border bg-surface-elevated">
+                                <summary className="cursor-pointer p-2 text-sm font-medium text-text-primary">Evasion signals</summary>
+                                <ul className="list-inside list-disc space-y-1 p-2 text-sm text-text-muted">
+                                  {advisory.evasionSignals.map((e, i) => (
+                                    <li key={i}>{e.signal} <Badge variant={e.severity === "high" ? "high" : e.severity === "medium" ? "medium" : "low"}>{e.severity}</Badge></li>
+                                  ))}
+                                </ul>
+                              </details>
+                            )}
+                            {advisory.policyConcerns && advisory.policyConcerns.length > 0 && (
+                              <details className="rounded border border-border bg-surface-elevated">
+                                <summary className="cursor-pointer p-2 text-sm font-medium text-text-primary">Policy concerns</summary>
+                                <ul className="space-y-2 p-2 text-sm">
+                                  {advisory.policyConcerns.map((pc, i) => (
+                                    <li key={i} className="rounded border border-border-soft p-2">
+                                      <p className="text-text-primary">{pc.concern}</p>
+                                      {pc.policyCitations?.map((cit, j) => (
+                                        <div key={j} className="mt-1 text-xs text-text-muted">
+                                          <span className="font-medium">{cit.documentTitle}</span> ({cit.chunkId.slice(0, 8)}…): {cit.snippet.slice(0, 120)}…
+                                        </div>
+                                      ))}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </details>
+                            )}
+                            {advisory.recommendedReviewerQuestions && advisory.recommendedReviewerQuestions.length > 0 && (
+                              <details className="rounded border border-border bg-surface-elevated">
+                                <summary className="cursor-pointer p-2 text-sm font-medium text-text-primary">Recommended reviewer questions</summary>
+                                <ul className="list-inside list-disc space-y-1 p-2 text-sm text-text-muted">
+                                  {advisory.recommendedReviewerQuestions.map((q, i) => (
+                                    <li key={i}>{q}</li>
+                                  ))}
+                                </ul>
+                              </details>
+                            )}
+                            {advisory.recommendedNextActions && advisory.recommendedNextActions.length > 0 && (
+                              <details className="rounded border border-border bg-surface-elevated">
+                                <summary className="cursor-pointer p-2 text-sm font-medium text-text-primary">Recommended next actions</summary>
+                                <ul className="space-y-1 p-2 text-sm text-text-muted">
+                                  {advisory.recommendedNextActions.map((a, i) => (
+                                    <li key={i}><Badge variant="default">{a.priority}</Badge> {a.action}</li>
+                                  ))}
+                                </ul>
+                              </details>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {(!latestRun || latestRun.errorMessage) && (
+                      <p className="text-sm text-text-muted">No advisory generated yet.</p>
+                    )}
+                    {canGenerate && (
+                      <form action={generateAdvisory}>
+                        <input type="hidden" name="caseId" value={id} />
+                        <Button type="submit" variant="secondary" size="sm" disabled={caseToRender.status === "CAPTURING"} data-testid="generate-advisory-btn">
+                          Generate advisory
+                        </Button>
+                      </form>
+                    )}
+                    {caseToRender.status === "CAPTURING" && (
+                      <p className="text-xs text-text-muted">Generate advisory is available after evidence capture completes.</p>
+                    )}
+                    <p className="text-xs text-text-muted border-t border-border-soft pt-3">
+                      Non-binding. Reviewer remains responsible.
+                    </p>
+                  </>
+                );
+              })()}
             </CardContent>
           </Card>
         </div>
