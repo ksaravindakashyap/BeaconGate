@@ -13,7 +13,7 @@ export function DecisionForm({ caseId }: { caseId: string }) {
         <select
           name="outcome"
           required
-          className="flex h-10 w-full rounded-md border border-border-soft bg-surface-elevated/15 px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background"
+          className="flex h-10 w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-slate-950 [color-scheme:dark]"
         >
           <option value="APPROVE">Approve</option>
           <option value="REJECT">Reject</option>
@@ -26,7 +26,7 @@ export function DecisionForm({ caseId }: { caseId: string }) {
           id="reviewerNotes"
           name="reviewerNotes"
           rows={3}
-          className="flex w-full rounded-md border border-border-soft bg-surface-elevated/15 px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background"
+          className="flex w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-slate-950"
           placeholder="Add reviewer notes..."
         />
       </div>

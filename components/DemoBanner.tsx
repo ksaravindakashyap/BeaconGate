@@ -11,7 +11,7 @@ export function DemoBanner() {
           Demo mode — connect Postgres/Redis to enable persistence and evidence capture.
         </p>
         <Link href="/setup">
-          <Button variant="outline" size="sm" className="border-border-soft bg-surface/50 text-text-primary hover:bg-surface-elevated/50 hover:text-text-primary">
+          <Button variant="outline" size="sm">
             Setup
           </Button>
         </Link>

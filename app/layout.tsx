@@ -25,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={gowunBatang.variable}>
-      <body className="min-h-screen">
+    <html lang="en" className={gowunBatang.variable} suppressHydrationWarning>
+      <body className="min-h-screen" suppressHydrationWarning>
         <GlobalBackdrop />
         <LandingTheme />
         <Nav />

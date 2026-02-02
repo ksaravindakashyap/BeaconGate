@@ -10,8 +10,8 @@ export default function Home() {
     <div className="min-h-screen w-full">
       {demo && (
         <div className="relative z-0 mx-auto max-w-[90rem] px-4 pt-4 md:px-6">
-          <Card className="border-border-soft bg-surface/40 backdrop-blur-md">
-            <CardContent className="py-3 text-sm font-semibold text-text-muted">
+          <Card className="border-white/10 bg-white/10 backdrop-blur-md">
+            <CardContent className="py-3 text-sm font-semibold text-emerald-100/90">
               This is a demo deployment. Use{" "}
               <Link
                 href="/setup"
@@ -41,18 +41,18 @@ export default function Home() {
           ]}
         />
 
-        <div className="relative z-0 border-b border-border-soft bg-surface/30 py-5 backdrop-blur-md">
+        <div className="relative z-0 border-b border-white/10 bg-white/5 py-5 backdrop-blur-md">
           <div className="mx-auto max-w-[90rem] px-4 md:px-6">
             <div className="flex flex-wrap items-center justify-center gap-6">
-              <span className="flex items-center gap-2 text-sm font-bold text-text-primary">
+              <span className="flex items-center gap-2 text-sm font-bold text-white">
                 <span className="text-accent" aria-hidden>✓</span>
                 Evidence-first
               </span>
-              <span className="flex items-center gap-2 text-sm font-bold text-text-primary">
+              <span className="flex items-center gap-2 text-sm font-bold text-white">
                 <span className="text-accent" aria-hidden>✓</span>
                 Deterministic traces
               </span>
-              <span className="flex items-center gap-2 text-sm font-bold text-text-primary">
+              <span className="flex items-center gap-2 text-sm font-bold text-white">
                 <span className="text-accent" aria-hidden>✓</span>
                 Audit-ready case files
               </span>
@@ -62,13 +62,13 @@ export default function Home() {
 
         <section
           id="features"
-          className="relative z-0 border-b border-border-soft py-10 md:py-14"
+          className="relative z-0 border-b border-white/10 py-10 md:py-14"
         >
           <div className="mx-auto max-w-[90rem] px-4 md:px-6">
-            <h2 className="text-center text-xl font-bold text-text-primary md:text-2xl">
+            <h2 className="text-center text-xl font-bold text-white md:text-2xl">
               Everything you need for ads enforcement
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-center text-sm font-semibold text-text-muted">
+            <p className="mx-auto mt-3 max-w-xl text-center text-sm font-semibold text-emerald-100/80">
               Built for review teams that value reproducibility and control.
             </p>
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -200,16 +200,16 @@ export default function Home() {
               ].map((item) => (
                 <Card
                   key={item.title}
-                  className="border-border-soft bg-surface-elevated/30 shadow-card backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-lg"
+                  className="border-white/10 bg-white/10 shadow-card backdrop-blur-xl transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/30 hover:bg-white/15 hover:shadow-lg"
                 >
                   <CardContent className="p-4">
-                    <span className="inline-flex items-center" aria-hidden>
+                    <span className="inline-flex items-center text-accent" aria-hidden>
                       {item.icon}
                     </span>
-                    <h3 className="mt-2 text-base font-bold text-text-primary">
+                    <h3 className="mt-2 text-base font-bold text-white">
                       {item.title}
                     </h3>
-                    <p className="mt-1.5 text-sm font-semibold text-text-muted">
+                    <p className="mt-1.5 text-sm font-semibold text-emerald-100/80">
                       {item.desc}
                     </p>
                   </CardContent>
@@ -221,35 +221,35 @@ export default function Home() {
 
         <section
           id="about"
-          className="relative z-0 border-b border-border-soft py-10 md:py-14"
+          className="relative z-0 border-b border-white/10 py-10 md:py-14"
         >
           <div className="mx-auto max-w-[90rem] px-4 md:px-6">
-            <h2 className="text-center text-xl font-bold text-text-primary md:text-2xl">
+            <h2 className="text-center text-xl font-bold text-white md:text-2xl">
               How it works
             </h2>
             <div className="mt-8 grid gap-6 sm:grid-cols-3">
               <div>
-                <h3 className="text-base font-bold text-text-primary">
+                <h3 className="text-base font-bold text-white">
                   Capture evidence
                 </h3>
-                <p className="mt-1.5 text-sm font-semibold text-text-muted">
+                <p className="mt-1.5 text-sm font-semibold text-emerald-100/80">
                   Submit a URL; we capture screenshots, HTML, and redirect chains
                   with integrity hashes.
                 </p>
               </div>
               <div>
-                <h3 className="text-base font-bold text-text-primary">
+                <h3 className="text-base font-bold text-white">
                   Run deterministic checks
                 </h3>
-                <p className="mt-1.5 text-sm font-semibold text-text-muted">
+                <p className="mt-1.5 text-sm font-semibold text-emerald-100/80">
                   Rules run as code. Every match has a rule ID and trace.
                 </p>
               </div>
               <div>
-                <h3 className="text-base font-bold text-text-primary">
+                <h3 className="text-base font-bold text-white">
                   Review + audit
                 </h3>
-                <p className="mt-1.5 text-sm font-semibold text-text-muted">
+                <p className="mt-1.5 text-sm font-semibold text-emerald-100/80">
                   Queue cases, add decisions, and keep case files linked to
                   evidence and rules.
                 </p>
@@ -260,23 +260,23 @@ export default function Home() {
 
         <section
           id="contact"
-          className="relative z-0 border-b border-border-soft py-10 md:py-14"
+          className="relative z-0 border-b border-white/10 py-10 md:py-14"
         >
           <div className="mx-auto max-w-[90rem] px-4 md:px-6">
-            <h2 className="text-center text-xl font-bold text-text-primary md:text-2xl">
+            <h2 className="text-center text-xl font-bold text-white md:text-2xl">
               Get in touch
             </h2>
-            <p className="mx-auto mt-2 text-center text-sm font-semibold text-text-muted">
+            <p className="mx-auto mt-2 text-center text-sm font-semibold text-emerald-100/80">
               Questions or feedback? Reach out anytime.
             </p>
-            <Card className="mx-auto mt-8 max-w-2xl border-border-soft bg-surface-elevated/30 shadow-card backdrop-blur-md transition-all duration-200 hover:border-accent/30">
+            <Card className="mx-auto mt-8 max-w-2xl border-white/10 bg-white/10 shadow-card backdrop-blur-xl transition-all duration-200 hover:border-accent/30 hover:bg-white/15">
               <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between md:p-5">
                 <div>
-                  <p className="text-base font-bold text-text-primary">
+                  <p className="text-base font-bold text-white">
                     K S Aravinda Kashyap
                   </p>
                 </div>
-                <div className="flex flex-col gap-1.5 text-sm font-semibold text-text-muted">
+                <div className="flex flex-col gap-1.5 text-sm font-semibold text-emerald-100/80">
                   <a
                     href="mailto:ksaravindakashyap@gmail.com"
                     className="inline-flex items-center gap-2 text-accent transition-colors duration-200 hover:text-accent-hover"
@@ -324,68 +324,59 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="relative z-0 border-t border-border-soft bg-surface/40 py-10 md:py-12 backdrop-blur-md">
+        <section className="relative z-0 border-t border-white/10 bg-white/5 py-10 md:py-12 backdrop-blur-md">
           <div className="mx-auto max-w-[90rem] px-4 text-center md:px-6">
-            <h2 className="text-xl font-bold text-text-primary md:text-2xl">
+            <h2 className="text-xl font-bold text-white md:text-2xl">
               Ready to review with evidence?
             </h2>
-            <p className="mt-2 text-base font-semibold text-text-muted">
+            <p className="mt-2 text-base font-semibold text-emerald-100/80">
               Submit a case or open the queue.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <Button
-                size="lg"
-                className="min-w-0 bg-accent text-accent-foreground hover:bg-accent-hover"
-                asChild
-              >
+              <Button size="lg" className="min-w-0" asChild>
                 <Link href="/submit">Submit a Case</Link>
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="min-w-0 border-border-soft bg-transparent text-text-primary hover:bg-surface/50 hover:text-text-primary hover:border-accent/50"
-                asChild
-              >
+              <Button size="lg" variant="outline" className="min-w-0" asChild>
                 <Link href="/queue">Open Queue</Link>
               </Button>
             </div>
           </div>
         </section>
 
-        <footer className="relative z-0 border-t border-border-soft py-8">
+        <footer className="relative z-0 border-t border-white/10 py-8">
           <div className="mx-auto max-w-[90rem] px-4 md:px-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-base font-bold text-text-primary">
+                <p className="text-base font-bold text-white">
                   BeaconGate
                 </p>
-                <p className="mt-0.5 text-sm font-semibold text-text-muted">
+                <p className="mt-0.5 text-sm font-semibold text-emerald-100/80">
                   Evidence-first enforcement workflow
                 </p>
               </div>
               <div className="flex flex-wrap gap-5">
                 <Link
                   href="#about"
-                  className="text-sm font-semibold text-text-muted transition-colors duration-200 hover:text-accent"
+                  className="text-sm font-semibold text-emerald-100/80 transition-colors duration-200 hover:text-accent"
                 >
                   About
                 </Link>
                 <Link
                   href="#features"
-                  className="text-sm font-semibold text-text-muted transition-colors duration-200 hover:text-accent"
+                  className="text-sm font-semibold text-emerald-100/80 transition-colors duration-200 hover:text-accent"
                 >
                   Features
                 </Link>
                 <Link
                   href="/queue"
-                  className="text-sm font-semibold text-text-muted transition-colors duration-200 hover:text-accent"
+                  className="text-sm font-semibold text-emerald-100/80 transition-colors duration-200 hover:text-accent"
                 >
                   Open Queue
                 </Link>
               </div>
             </div>
-            <div className="mt-6 border-t border-border-soft pt-4">
-              <p className="text-xs font-semibold text-text-muted">
+            <div className="mt-6 border-t border-white/10 pt-4">
+              <p className="text-xs font-semibold text-emerald-100/70">
                 © {new Date().getFullYear()} BeaconGate. All rights reserved.
               </p>
             </div>
